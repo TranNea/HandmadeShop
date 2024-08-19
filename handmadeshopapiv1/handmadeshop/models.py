@@ -15,8 +15,7 @@ class User(AbstractUser):
         ('C', 'CUSTOMER')
     )
 
-    username = None
-    email = models.EmailField(_('email address'), unique=True)
+    email = models.EmailField(_('email address'), unique=True, blank=True, null=True)
     role = models.CharField(max_length=20, choices=STATUS_CHOICES, default='C')
     first_name = models.CharField(max_length=20, blank=True)
     last_name = models.CharField(max_length=20, blank=True)
@@ -24,12 +23,6 @@ class User(AbstractUser):
     address2 = models.CharField(max_length=255, null=True, blank=True)
     phone = models.CharField(max_length=20, blank=True)
     is_active = models.BooleanField(default=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = []
-
-    def __str__(self):
-        return self.email
 
     def save(self, *args, **kwargs):
         if self.is_superuser:
@@ -93,7 +86,6 @@ class Product(BaseModel):
 
 class ProductComment(BaseModel):
     description = RichTextField()
-    image = CloudinaryField(null=True, blank=True)
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
@@ -135,7 +127,6 @@ class Order(BaseModel):
         ('R', 'RETURNING')
     )
 
-    ship_cost = models.FloatField(default=35000)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD, default='C')
     status = models.CharField(max_length=20, choices=ORDER_STATUS, default='P')
     shipping_address = models.CharField(max_length=255, default='539 Hương Lộ 3, Sơn Kỳ, Tân Phú, TP. Hồ Chí Minh')
@@ -147,11 +138,12 @@ class Order(BaseModel):
         return self.user.email
 
     def total_order_price(self):
+        total = 0
         for item in self.items.all():
             total = sum(item.final_price())
         if self.voucher:
-            total -= self.voucher.discount
-        return total + self.ship_cost
+            total -= self.voucher.value
+        return total + 35000    #Tiền ship cố định 35000VNĐ cho mọi đơn hàng, địa chỉ
 
 
 class Item(BaseModel):
@@ -180,7 +172,8 @@ class Refund(BaseModel):
     reason = models.CharField(max_length=255, null=True, blank=True)
     accepted = models.BooleanField(default=False)
 
-    order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    # 1 đơn hàng có thể yêu cầu hoàn tiền nhiều lần vì 1 đơn hàng có thể có nhiều sản phẩm
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='refund')
 
     def __str__(self):
         return f"{self.pk}"

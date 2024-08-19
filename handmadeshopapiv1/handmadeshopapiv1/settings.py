@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'handmadeshop',
     'ckeditor',
-    'ckeditor_uploader'
+    'ckeditor_uploader',
+    'rest_framework'
 ]
 
 AUTH_USER_MODEL = 'handmadeshop.User'
