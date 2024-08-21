@@ -74,9 +74,17 @@ class Product(BaseModel):
     name = models.CharField(max_length=255)
     description = RichTextField()
     price = models.FloatField()
-    image = CloudinaryField(null=True, blank=True)
     discount = models.FloatField(null=True, blank=True)
     quantity = models.PositiveIntegerField(null=True, blank=True)
+
+    image1 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
+    image2 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
+    image3 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
+    image4 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
+    image5 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
+
+    imagewidth = models.PositiveIntegerField(editable=False, default=401)
+    imageheight = models.PositiveIntegerField(editable=False, default=401)
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='category')
 
