@@ -22,9 +22,9 @@ from rest_framework import permissions
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="Apartment API",
+        title="HandmadeShop API",
         default_version='v1',
-        description="APIs for ApartmentManager",
+        description="APIs for HandmadeShop Web Application",
         contact=openapi.Contact(email="2151050296nhan@ou.edu.vn"),
         license=openapi.License(name="TranLeHoaiNhan@2024"),
     ),
