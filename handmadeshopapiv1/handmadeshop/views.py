@@ -47,57 +47,36 @@ class BlogCommentViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = BlogComment.objects.all()
     serializer_class = serializers.BlogCommentSerializer
 
+    @action(methods=['post'], url_path='comments', detail=False)
+    def post_blogcomment(self, request):
+        blog_id = request.data.get('blog_id')
+
+        try:
+            blog = Blog.objects.get(pk=blog_id)
+        except Blog.DoesNotExist:
+            return Response({"detail": "Blog not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        blogcomment = BlogComment.objects.create(
+            blog=blog,
+            user=request.user,
+            comment=request.data.get('comment')
+        )
+
+        return Response(serializers.BlogCommentSerializer(blogcomment).data, status=status.HTTP_201_CREATED)
+
 
 class ProductViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
 
-    @action(methods=['post'], url_path='products', detail=False)
-    def post_product(self, request):
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(methods=['patch'], url_path='products', detail=True)
-    def edit_product(self, request, pk=None):
-        try:
-            product = Product.objects.get(pk=pk)
-        except Product.DoesNotExist:
-            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = self.serializer_class(product, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(methods=['delete'], url_path='products', detail=True)
-    def delete_product(self, request, pk=None):
-        try:
-            product = Product.objects.get(pk=pk)
-        except Product.DoesNotExist:
-            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        product.delete()
-        return Response({"detail": "Product deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
-
-    @action(methods=['get'], url_path='get-products', detail=False)
-    def get_products(self, request):
-        products = Product.objects.all()
-        serializer = self.serializer_class(products, many=True)
-        return Response(serializer.data)
-
-
-class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView):
+class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView):
     queryset = Wishlist.objects.all()
     serializer_class = serializers.WishlistSerializer
 
     def get_permissions(self):
         if self.action in ['add_product','remove_product']:
-            return [permissions.IsAdminUser()]
-
+            return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
     @action(methods=['post'], url_path='products', detail=False)
