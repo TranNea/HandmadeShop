@@ -69,6 +69,24 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
 
+    def get_queryset(self):
+        queryset = self.queryset
+
+        q = self.request.query_params.get('q')
+        if q:
+            queryset = queryset.filter(name__icontains=q)
+        return queryset
+
+        cate_id = self.request.query_params.get('category_id')
+        if category_id:
+            queryset = queryset.filter(category_id=cate_id)
+        return queryset
+
+
+class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Category.objects.all()
+    serializer_class = serializers.CategorySerializer
+
 
 class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView):
     queryset = Wishlist.objects.all()

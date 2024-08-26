@@ -37,11 +37,17 @@ class BlogCommentAdmin(admin.ModelAdmin):
     list_display = ["user", "blog", "created_date"]
 
 
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ['name', 'price', 'quantity', 'category']
+    search_fields = ['name', 'description']
+    list_filter = ['price', 'category']
+
+
 # Register your models here.
 admin.site.register(User, UserAdmin)
 admin.site.register(Blog, BlogAdmin)
 admin.site.register(BlogComment, BlogCommentAdmin)
-admin.site.register(Product)
+admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductComment)
 admin.site.register(Order)
 admin.site.register(Category)
