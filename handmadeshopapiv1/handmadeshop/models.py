@@ -71,11 +71,18 @@ class Category(BaseModel):
 
 
 class Product(BaseModel):
+
+    PRODUCT_STATUS = (
+        ('S', 'STOCK'),
+        ('O', 'SOLD OUT')
+    )
+
     name = models.CharField(max_length=255)
     description = RichTextField()
     price = models.FloatField()
     discount = models.FloatField(null=True, blank=True)
     quantity = models.PositiveIntegerField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=PRODUCT_STATUS, default='S')
 
     image1 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
     image2 = CloudinaryField(null=True, blank=True, width_field='imagewidth', height_field='imageheight')
@@ -87,6 +94,14 @@ class Product(BaseModel):
     imageheight = models.PositiveIntegerField(editable=False, default=401)
 
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, related_name='category')
+
+    def save(self, *args, **kwargs):
+        if self.quantity is None or self.quantity == 0:
+            self.status = 'O'
+        else:
+            self.status = 'S'
+
+        super().save(*args, **kwargs)
 
     def __str__(self):
          return self.name

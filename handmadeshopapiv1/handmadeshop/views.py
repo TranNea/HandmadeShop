@@ -1,8 +1,10 @@
+from django.contrib.admin.templatetags.admin_list import pagination
 from django.shortcuts import render
+from django.template.defaulttags import comment
 from rest_framework import viewsets, generics, parsers, permissions, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from handmadeshop import serializers
+from handmadeshop import serializers, paginators, perms
 from handmadeshop.models import *
 
 # Create your views here.
@@ -38,54 +40,65 @@ class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,g
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class BlogViewSet(viewsets.ViewSet, generics.ListAPIView):
+class BlogViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Blog.objects.all()
     serializer_class = serializers.BlogSerializer
+
+    @action(methods=['get'], url_path='comments', detail=True)
+    def get_blogcomment(self, request, pk):
+        blogcomments = self.get_object().blogcomment_set.select_related('user').order_by('-id')
+        return Response(serializers.BlogCommentSerializer(blogcomments, many=True).data)
+
+    @action(methods=['post'], url_path='comments', detail=True)
+    def add_blogcomment(self, request, pk):
+        c = self.get_object().blogcomment_set.create(comment=request.data.get('comment'), user=request.user)
+        return Response(serializers.BlogCommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
 
 class BlogCommentViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = BlogComment.objects.all()
     serializer_class = serializers.BlogCommentSerializer
 
-    @action(methods=['post'], url_path='comments', detail=False)
-    def post_blogcomment(self, request):
-        blog_id = request.data.get('blog_id')
 
-        try:
-            blog = Blog.objects.get(pk=blog_id)
-        except Blog.DoesNotExist:
-            return Response({"detail": "Blog not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        blogcomment = BlogComment.objects.create(
-            blog=blog,
-            user=request.user,
-            comment=request.data.get('comment')
-        )
-
-        return Response(serializers.BlogCommentSerializer(blogcomment).data, status=status.HTTP_201_CREATED)
-
-
-class ProductViewSet(viewsets.ViewSet, generics.ListAPIView):
+class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Product.objects.all()
     serializer_class = serializers.ProductSerializer
+    pagination_class = paginators.ProductPaginator
 
     def get_queryset(self):
         queryset = self.queryset
 
         q = self.request.query_params.get('q')
+        cate_id = self.request.query_params.get('category_id')
+        product_status = self.request.query_params.get('status')
+
         if q:
             queryset = queryset.filter(name__icontains=q)
-        return queryset
-
-        cate_id = self.request.query_params.get('category_id')
-        if category_id:
+        if cate_id:
             queryset = queryset.filter(category_id=cate_id)
+        if product_status:
+            queryset = queryset.filter(status=product_status)
         return queryset
 
+    @action(methods=['get'], url_path='comments', detail=True)
+    def get_productcomment(self, request, pk):
+        productcomments = self.get_object().productcomment_set.select_related('user').order_by('-id')
+        return Response(serializers.ProductCommentSerializer(productcomments, many=True).data)
+
+    @action(methods=['post'], url_path='comments', detail=True)
+    def add_productcomment(self, request, pk):
+        c = self.get_object().productcomment_set.create(description=request.data.get('description'), user=request.user)
+        return Response(serializers.ProductCommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
+
+    @action(methods=['get'], url_path='products', detail=True)
+    def get_products(self, request, pk):
+        category_id = Category.objects.get(pk=pk)
+        products = Product.objects.filter(category=category_id)
+        return Response(serializers.ProductSerializer(products, many=True).data, status=status.HTTP_200_OK)
 
 
 class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView):
@@ -123,3 +136,5 @@ class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAP
 
         wishlist_product.delete()
         return Response({"detail": "Product removed from wishlist."}, status=status.HTTP_204_NO_CONTENT)
+
+

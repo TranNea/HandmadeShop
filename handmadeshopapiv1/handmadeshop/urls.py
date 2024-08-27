@@ -7,8 +7,9 @@ r = routers.DefaultRouter()
 
 r.register('users', views.UserViewSet, basename='users')
 r.register('blogs', views.BlogViewSet, basename='blogs')
-r.register('blogcomments', views.BlogViewSet, basename='blogcomments')
+r.register('blogcomments', views.BlogCommentViewSet, basename='blogcomments')
 r.register('products', views.ProductViewSet, basename='products')
+r.register('categories', views.CategoryViewSet, basename='categories')
 r.register('wishlists', views.WishlistViewSet, basename='wishlists')
 
 urlpatterns = [

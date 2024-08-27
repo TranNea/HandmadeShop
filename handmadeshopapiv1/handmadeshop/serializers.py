@@ -27,11 +27,19 @@ class UserSerializer(serializers.ModelSerializer):
 
 class StaticItemSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
-        #Hiển thị dường dân tuyệt đối của ảnh trên swagger
         rep = super().to_representation(instance)
-        image = instance.image
-        if image:
-            rep['image'] = image.url
+
+        if hasattr(instance, 'image'):
+            image = instance.image
+            if image:
+                rep['image'] = image.url
+
+        for i in range(1, 6):
+            image_field = f'image{i}'
+            image = getattr(instance, image_field, None)
+            if image:
+                rep[image_field] = image.url
+
         return rep
 
 
@@ -43,12 +51,13 @@ class BlogSerializer(StaticItemSerializer):
 
 
 class BlogCommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    blog = BlogSerializer(read_only=True)
+    user = serializers.IntegerField(source='user.id', read_only=True)
+    blog_id = serializers.IntegerField(source='blog.id', read_only=True)
+    blog_title = serializers.CharField(source='blog.title', read_only=True)
 
     class Meta:
         model = BlogComment
-        fields = ['id', 'user', 'comment', 'blog', 'created_date']
+        fields = ['id', 'user', 'comment', 'blog_id', 'blog_title', 'created_date']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -64,11 +73,11 @@ class ProductSerializer(StaticItemSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'image1', 'image2', 'image3', 'image4', 'image5', 'description',
-                  'price', 'discount', 'quantity', 'category']
+                  'price', 'discount', 'quantity', 'category', 'status']
 
 
 class ProductCommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
+    user = serializers.IntegerField(source='user.id', read_only=True)
     product = ProductSerializer(read_only=True)
 
     class Meta:
@@ -77,12 +86,13 @@ class ProductCommentSerializer(serializers.ModelSerializer):
 
 
 class WishlistSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)
-    product = ProductSerializer(read_only=True)
+    user = serializers.IntegerField(source='user.id', read_only=True)
+    product_id = serializers.IntegerField(source='product.id', read_only=True)
+    product_name = serializers.CharField(source='product.name', read_only=True)
 
     class Meta:
         model = Wishlist
-        fields = ['id', 'user', 'product']
+        fields = ['id', 'user', 'product_id', 'product_name']
 
 
 class CartSerializer(serializers.ModelSerializer):
