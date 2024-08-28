@@ -14,9 +14,10 @@ class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,g
     parser_classes = [parsers.MultiPartParser,]
 
     def get_permissions(self):
-        if self.action in ['delete_user']:
+        if self.action == 'delete_user':
             return [permissions.IsAdminUser()]
-
+        if self.action in ['retrieve', 'get_current_user']:
+            return [permissions.IsAuthenticated()]
         return [permissions.AllowAny()]
 
     @action(methods=['get', 'patch'], url_path='current-user', detail=False)

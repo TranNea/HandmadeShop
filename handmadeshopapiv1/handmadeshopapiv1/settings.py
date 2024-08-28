@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 import pymysql
+from oauthlib.common import CLIENT_ID_CHARACTER_SET
 
 pymysql.install_as_MySQLdb()
 
@@ -47,8 +48,15 @@ INSTALLED_APPS = [
     'ckeditor',
     'ckeditor_uploader',
     'rest_framework',
-    'drf_yasg'
+    'drf_yasg',
+    'oauth2_provider'
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    )
+}
 
 AUTH_USER_MODEL = 'handmadeshop.User'
 
@@ -144,3 +152,6 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+CLIENT_ID='RdRtHjCe8kucUQot4c2xDlDoYrMIHUg5ay3kKqGA'
+CLIENT_SECRET='c1t1MseM5OOCkC46Ol7NvpoECyblHyJNKOXz5Zbc5Gj1OQW5tzjXKmEM3l9ai0x6m60uZ2hhXOkHrNOa5uuMtjS5vV7ruLyfyHObwOHBbttHfXHufbIArzbiPQb5uZ79'
