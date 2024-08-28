@@ -90,6 +90,12 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
         c = self.get_object().productcomment_set.create(description=request.data.get('description'), user=request.user)
         return Response(serializers.ProductCommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
+
+class ProductCommentViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = ProductComment.objects.all()
+    serializer_class = serializers.ProductSerializer
+
+
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
@@ -101,7 +107,7 @@ class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
         return Response(serializers.ProductSerializer(products, many=True).data, status=status.HTTP_200_OK)
 
 
-class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView):
+class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Wishlist.objects.all()
     serializer_class = serializers.WishlistSerializer
 
@@ -138,3 +144,109 @@ class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAP
         return Response({"detail": "Product removed from wishlist."}, status=status.HTTP_204_NO_CONTENT)
 
 
+class CartViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Cart.objects.filter(items__isnull=False)
+    serializer_class = serializers.CartSerializer
+
+    def get_cart(self):
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
+        return cart
+
+    @action(methods=['post'], url_path='items', detail=False)
+    def add_items(self, request):
+        product_id = request.data.get('product_id')
+        quantity = int(request.data.get('quantity', 1))
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        cart = self.get_cart()
+        item, created = Item.objects.get_or_create(cart=cart, product=product)
+        if not created:
+            item.quantity += quantity
+        item.save()
+
+        return Response(serializers.ItemSerializer(item).data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['delete'], url_path='cartitems', detail=False)
+    def delete_cartitems(self, request):
+        product_id = request.data.get('product_id')
+
+        try:
+            product = Product.objects.get(id=product_id)
+        except Product.DoesNotExist:
+            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        cart = self.get_cart()
+        item = Item.objects.filter(cart=cart, product=product).first()
+
+        if item:
+            item.delete()
+            return Response({"detail": "Item removed from cart."}, status=status.HTTP_200_OK)
+        else:
+            return Response({"detail": "Item not found in cart."}, status=status.HTTP_404_NOT_FOUND)
+
+
+class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
+    queryset = Order.objects.all()
+    serializer_class = serializers.OrderSerializer
+
+    def get_items(self):
+        cart = Cart.objects.filter(user=self.request.user).first()
+        return cart.items.all() if cart else []
+
+    @action(methods=['post'], url_path='orders', detail=False)
+    def create_order(self, request):
+        user = request.user
+        payment_method = request.data.get('payment_method', 'C')
+        shipping_address = request.data.get('shipping_address')
+        voucher_code = request.data.get('voucher_code')
+
+        voucher = None
+        if voucher_code:
+            try:
+                voucher = Voucher.objects.get(code=voucher_code)
+            except Voucher.DoesNotExist:
+                return Response({"detail": "Invalid voucher code."}, status=status.HTTP_400_BAD_REQUEST)
+
+        order = Order.objects.create(
+            user=user,
+            payment_method=payment_method,
+            shipping_address=shipping_address,
+            voucher=voucher
+        )
+
+        cart_items = self.get_cart_items()
+        for item in cart_items:
+            item.order = order
+            item.cart = None
+            item.save()
+
+        Cart.objects.filter(user=user).delete()
+
+        return Response(serializers.OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+
+
+class VoucherViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Voucher.objects.all()
+    serializer_class = serializers.VoucherSerializer
+
+
+class RefundViewSet(viewsets.ViewSet, generics.ListAPIView):
+    queryset = Refund.objects.all()
+    serializer_class = serializers.RefundSerializer
+
+    @action(methods=['post'], url_path='refunds', detail=False)
+    def create_refund(self, request):
+        order_id = request.data.get('order_id')
+        reason = request.data.get('reason')
+
+        try:
+            order = Order.objects.get(id=order_id)
+        except Order.DoesNotExist:
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        refund = Refund.objects.create(order=order, reason=reason)
+        return Response(serializers.RefundSerializer(refund).data, status=status.HTTP_201_CREATED)
