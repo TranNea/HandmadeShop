@@ -37,11 +37,14 @@ class BlogCommentAdmin(admin.ModelAdmin):
     list_display = ["user", "blog", "created_date"]
 
 
+class CartAdmin(admin.ModelAdmin):
+    list_display = ["user", "created_date"]
+
+
 class ProductAdmin(admin.ModelAdmin):
     list_display = ['name', 'price', 'quantity', 'category', 'status']
     search_fields = ['name', 'description']
     list_filter = ['price', 'category', 'status']
-
 
 # Register your models here.
 admin.site.register(User, UserAdmin)
@@ -51,7 +54,7 @@ admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductComment)
 admin.site.register(Order)
 admin.site.register(Category)
-admin.site.register(Cart)
+admin.site.register(Cart, CartAdmin)
 admin.site.register(Voucher)
 admin.site.register(Wishlist)
 admin.site.register(Item)

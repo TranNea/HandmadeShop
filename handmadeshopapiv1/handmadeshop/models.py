@@ -158,7 +158,7 @@ class Order(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.user.email
+        return self.user.username
 
     def total_order_price(self):
         total = 0
