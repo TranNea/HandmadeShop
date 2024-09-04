@@ -1,4 +1,5 @@
 # HandmadeShop
 - Languages: Python
 - Database: MySQL
-- Others: Django, Cloudinary
+- Test API: Postman
+- Others: Django (CKEditor, OAuth2), Cloudinary
