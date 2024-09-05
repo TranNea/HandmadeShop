@@ -66,6 +66,11 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
     serializer_class = serializers.ProductSerializer
     pagination_class = paginators.ProductPaginator
 
+    def get_permissions(self):
+        if self.action in ['add_to_wishlist']:
+            return [permissions.IsAuthenticated()]
+        return [permissions.AllowAny()]
+
     def get_queryset(self):
         queryset = self.queryset
 
@@ -91,6 +96,28 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
         c = self.get_object().productcomment_set.create(description=request.data.get('description'), user=request.user)
         return Response(serializers.ProductCommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
+    @action(methods=['post'], url_path='wishlists', detail=True)
+    def add_to_wishlist(self, request, pk):
+        product = self.get_object()
+        wishlist_product = Wishlist.objects.filter(user=request.user, product=product)
+
+        if wishlist_product.exists():
+            return Response({"detail": "Product already in wishlist."}, status=status.HTTP_200_OK)
+
+        Wishlist.objects.create(user=request.user, product=product)
+        return Response({"detail": "Product added to wishlist."}, status=status.HTTP_201_CREATED)
+
+    @action(methods=['delete'], url_path='remove-wishlist', detail=True)
+    def remove_from_wishlist(self, request, pk):
+        product = self.get_object()
+        wishlist_product = Wishlist.objects.filter(user=request.user, product=product).first()
+
+        if not wishlist_product:
+            return Response({"detail": "Product not found in wishlist."}, status=status.HTTP_404_NOT_FOUND)
+
+        wishlist_product.delete()
+        return Response({"detail": "Product removed from wishlist."}, status=status.HTTP_204_NO_CONTENT)
+
 
 class ProductCommentViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = ProductComment.objects.all()
@@ -108,41 +135,14 @@ class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
         return Response(serializers.ProductSerializer(products, many=True).data, status=status.HTTP_200_OK)
 
 
-class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView):
+class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Wishlist.objects.all()
     serializer_class = serializers.WishlistSerializer
+    permission_classes = [perms.WishlistOwner]
 
-    def get_permissions(self):
-        if self.action in ['add_product','remove_product']:
-            return [permissions.IsAuthenticated()]
-        return [permissions.AllowAny()]
-
-    @action(methods=['post'], url_path='products', detail=False)
-    def add_product(self, request):
-        product_id = request.data.get('product_id')
-        product = Product.objects.filter(id=product_id).first()
-
-        if not product:
-            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        wishlist_product = Wishlist.objects.filter(user=request.user, product=product)
-
-        if wishlist_product.exists():
-            wishlist_product.delete()
-            return Response({"detail": "Product has existed."}, status=status.HTTP_204_NO_CONTENT)
-        else:
-            Wishlist.objects.create(user=request.user, product=product)
-            return Response({"detail": "Product added to wishlist."}, status=status.HTTP_201_CREATED)
-
-    @action(methods=['delete'], url_path='products', detail=True)
-    def remove_product(self, request, pk=None):
-        try:
-            wishlist_product = Wishlist.objects.get(pk=pk)
-        except Wishlist.DoesNotExist:
-            return Response({"detail": "Product not found in wishlist."}, status=status.HTTP_404_NOT_FOUND)
-
-        wishlist_product.delete()
-        return Response({"detail": "Product removed from wishlist."}, status=status.HTTP_204_NO_CONTENT)
+    def get_queryset(self):
+        user = self.request.user
+        return Wishlist.objects.filter(user=user)
 
 
 class CartViewSet(viewsets.ViewSet, generics.ListAPIView):
