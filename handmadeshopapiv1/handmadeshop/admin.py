@@ -22,7 +22,7 @@ class BlogForm(forms.ModelForm):
 
 class BlogAdmin(admin.ModelAdmin):
     list_display = ["title", "created_date"]
-    search_fields = ['title', 'description']
+    search_fields = ['title', 'content']
     list_filter = ['id', 'created_date', 'title']
     readonly_fields = ['my_image']
     forms = BlogForm
@@ -46,12 +46,16 @@ class ProductAdmin(admin.ModelAdmin):
     search_fields = ['name', 'description']
     list_filter = ['price', 'category', 'status']
 
+
+class ProductCommentAdmin(admin.ModelAdmin):
+    list_display = ["user", "product", "description"]
+
 # Register your models here.
 admin.site.register(User, UserAdmin)
 admin.site.register(Blog, BlogAdmin)
 admin.site.register(BlogComment, BlogCommentAdmin)
 admin.site.register(Product, ProductAdmin)
-admin.site.register(ProductComment)
+admin.site.register(ProductComment, ProductCommentAdmin)
 admin.site.register(Order)
 admin.site.register(Category)
 admin.site.register(Cart, CartAdmin)

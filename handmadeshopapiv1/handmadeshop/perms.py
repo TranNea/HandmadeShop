@@ -8,4 +8,9 @@ class CommentOwner(permissions.IsAuthenticated):
 
 class WishlistOwner(permissions.IsAuthenticated):
     def has_object_permission(self, request, view, obj):
-        return obj.user == request.user
+        return super().has_permission(request, view) and obj.user == request.user
+
+
+class CartOwner(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        return super().has_permission(request, view) and obj.user == request.user

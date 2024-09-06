@@ -7,3 +7,11 @@ class ProductPaginator(pagination.PageNumberPagination):
 
 class CategoryPaginator(pagination.PageNumberPagination):
     page_size = 5
+
+
+class CommentPaginator(pagination.PageNumberPagination):
+    page_size = 2
+
+
+class BlogPaginator(pagination.PageNumberPagination):
+    page_size = 5

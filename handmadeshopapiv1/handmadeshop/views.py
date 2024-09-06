@@ -44,21 +44,30 @@ class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,g
 class BlogViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Blog.objects.all()
     serializer_class = serializers.BlogSerializer
+    pagination_class = paginators.BlogPaginator
 
-    @action(methods=['get'], url_path='comments', detail=True)
+    @action(methods=['get'], url_path='blogcomments', detail=True)
     def get_blogcomment(self, request, pk):
         blogcomments = self.get_object().blogcomment_set.select_related('user').order_by('-id')
+
+        paginator = paginators.CommentPaginator()
+        page = paginator.paginate_queryset(blogcomments, request)
+        if page is not None:
+            serializer = serializers.BlogCommentSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
         return Response(serializers.BlogCommentSerializer(blogcomments, many=True).data)
 
     @action(methods=['post'], url_path='comments', detail=True)
     def add_blogcomment(self, request, pk):
-        c = self.get_object().blogcomment_set.create(comment=request.data.get('comment'), user=request.user)
+        c = self.get_object().blogcomment_set.create(content=request.data.get('content'), user=request.user)
         return Response(serializers.BlogCommentSerializer(c).data, status=status.HTTP_201_CREATED)
 
 
-class BlogCommentViewSet(viewsets.ViewSet, generics.ListAPIView):
+class BlogCommentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = BlogComment.objects.all()
     serializer_class = serializers.BlogCommentSerializer
+    permission_classes = [perms.CommentOwner]
 
 
 class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
@@ -86,9 +95,16 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
             queryset = queryset.filter(status=product_status)
         return queryset
 
-    @action(methods=['get'], url_path='comments', detail=True)
+    @action(methods=['get'], url_path='productcomments', detail=True)
     def get_productcomment(self, request, pk):
         productcomments = self.get_object().productcomment_set.select_related('user').order_by('-id')
+
+        paginator = paginators.CommentPaginator()
+        page = paginator.paginate_queryset(productcomments, request)
+        if page is not None:
+            serializer = serializers.ProductCommentSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
+
         return Response(serializers.ProductCommentSerializer(productcomments, many=True).data)
 
     @action(methods=['post'], url_path='comments', detail=True)
@@ -119,9 +135,10 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
         return Response({"detail": "Product removed from wishlist."}, status=status.HTTP_204_NO_CONTENT)
 
 
-class ProductCommentViewSet(viewsets.ViewSet, generics.ListAPIView):
+class ProductCommentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = ProductComment.objects.all()
-    serializer_class = serializers.ProductSerializer
+    serializer_class = serializers.ProductCommentSerializer
+    permission_classes = [perms.CommentOwner]
 
 
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
@@ -145,9 +162,10 @@ class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveA
         return Wishlist.objects.filter(user=user)
 
 
-class CartViewSet(viewsets.ViewSet, generics.ListAPIView):
+class CartViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     queryset = Cart.objects.filter(items__isnull=False)
     serializer_class = serializers.CartSerializer
+    permission_classes = [perms.CartOwner]
 
     def get_cart(self):
         cart, created = Cart.objects.get_or_create(user=self.request.user)

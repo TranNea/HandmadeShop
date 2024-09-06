@@ -58,9 +58,13 @@ class Blog(BaseModel):
 
 
 class BlogComment(BaseModel):
-    comment = RichTextField()
+    content = RichTextField()
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     blog = models.ForeignKey(Blog, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f'{self.user} - {self.blog}'
 
 
 class Category(BaseModel):
@@ -113,6 +117,9 @@ class ProductComment(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, null=True)
 
+    def __str__(self):
+        return f'{self.user} - {self.product}'
+
 
 class Wishlist(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -163,7 +170,7 @@ class Order(BaseModel):
     def total_order_price(self):
         total = 0
         for item in self.items.all():
-            total = sum(item.final_price())
+            total += item.final_price()
         if self.voucher:
             total -= self.voucher.value
         return total + 35000    #Tiền ship cố định 35000VNĐ cho mọi đơn hàng, địa chỉ
@@ -183,7 +190,8 @@ class Item(BaseModel):
         return self.quantity * self.product.price
 
     def discount_total_price(self):
-        return self.quantity * self.product.discount
+        discount = self.product.discount or 0
+        return self.quantity * discount
 
     def final_price(self):
         if self.product.discount:

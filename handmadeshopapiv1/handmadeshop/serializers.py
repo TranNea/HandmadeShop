@@ -47,17 +47,15 @@ class BlogSerializer(StaticItemSerializer):
 
     class Meta:
         model = Blog
-        fields = ['id', 'title', 'content', 'image']
+        fields = ['id', 'title', 'content', 'image'] + ['content']
 
 
 class BlogCommentSerializer(serializers.ModelSerializer):
-    user = serializers.IntegerField(source='user.id', read_only=True)
-    blog_id = serializers.IntegerField(source='blog.id', read_only=True)
-    blog_title = serializers.CharField(source='blog.title', read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = BlogComment
-        fields = ['id', 'user', 'comment', 'blog_id', 'blog_title', 'created_date']
+        fields = ['id', 'content', 'created_date', 'user']
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -73,16 +71,15 @@ class ProductSerializer(StaticItemSerializer):
     class Meta:
         model = Product
         fields = ['id', 'name', 'image1', 'image2', 'image3', 'image4', 'image5', 'description',
-                  'price', 'discount', 'quantity', 'category', 'status']
+                  'price', 'discount', 'quantity', 'category', 'status'] + ['description']
 
 
 class ProductCommentSerializer(serializers.ModelSerializer):
-    user = serializers.IntegerField(source='user.id', read_only=True)
-    product = ProductSerializer(read_only=True)
+    user = UserSerializer()
 
     class Meta:
         model = ProductComment
-        fields = ['id', 'user', 'description', 'product', 'created_date']
+        fields = ['id', 'description', 'created_date', 'user']
 
 
 class WishlistSerializer(serializers.ModelSerializer):
@@ -97,10 +94,15 @@ class WishlistSerializer(serializers.ModelSerializer):
 
 class CartSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
+    items = serializers.SerializerMethodField()
 
     class Meta:
         model = Cart
-        fields = ['id', 'user']
+        fields = ['id', 'user', 'items']
+
+    def get_items(self, obj):
+        items = obj.items.all()
+        return ItemSerializer(items, many=True).data
 
 
 class VoucherSerializer(serializers.ModelSerializer):
@@ -126,7 +128,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-    cart = CartSerializer(read_only=True)
+    # cart = CartSerializer(read_only=True)
     order = OrderSerializer(read_only=True)
 
     class Meta:
