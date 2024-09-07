@@ -154,7 +154,8 @@ class Order(BaseModel):
         ('P', 'PREPARING'),
         ('S', 'SHIPPING'),
         ('D', 'DELIVERED'),
-        ('R', 'RETURNING')
+        ('R', 'RETURNING'),
+        ('C', 'CANCELED')
     )
 
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD, default='C')

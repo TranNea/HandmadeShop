@@ -252,6 +252,34 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
 
         return Response(serializers.OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 
+    @action(methods=['patch'], url_path='cancelorders', detail=True)
+    def cancel_order(self, request, pk=None):
+        try:
+            order = Order.objects.get(pk=pk, user=request.user)
+        except Order.DoesNotExist:
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if order.status in ['D', 'R']:
+            return Response({"detail": "Cannot cancel a delivered or returned order."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        order.status = 'C'
+        order.save()
+
+        return Response(serializers.OrderSerializer(order).data, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], url_path='userorders', detail=False)
+    def all_user_orders(self, request):
+        user = request.user
+        orders = Order.objects.filter(user=user)
+
+        if not orders.exists():
+            return Response({"detail": "Orders not found."},
+                            status=status.HTTP_404_NOT_FOUND)
+
+        serializer = serializers.OrderSerializer(orders, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
 
 class VoucherViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Voucher.objects.all()

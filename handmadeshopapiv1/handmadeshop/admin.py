@@ -50,13 +50,17 @@ class ProductAdmin(admin.ModelAdmin):
 class ProductCommentAdmin(admin.ModelAdmin):
     list_display = ["user", "product", "description"]
 
+
+class OrderAdmin(admin.ModelAdmin):
+    list_display = ["id", "user", "status", "payment_method","created_date"]
+
 # Register your models here.
 admin.site.register(User, UserAdmin)
 admin.site.register(Blog, BlogAdmin)
 admin.site.register(BlogComment, BlogCommentAdmin)
 admin.site.register(Product, ProductAdmin)
 admin.site.register(ProductComment, ProductCommentAdmin)
-admin.site.register(Order)
+admin.site.register(Order, OrderAdmin)
 admin.site.register(Category)
 admin.site.register(Cart, CartAdmin)
 admin.site.register(Voucher)
