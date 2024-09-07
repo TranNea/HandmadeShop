@@ -128,7 +128,6 @@ class OrderSerializer(serializers.ModelSerializer):
 
 class ItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer(read_only=True)
-    # cart = CartSerializer(read_only=True)
     order = OrderSerializer(read_only=True)
 
     class Meta:

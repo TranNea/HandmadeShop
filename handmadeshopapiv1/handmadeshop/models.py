@@ -187,10 +187,10 @@ class Item(BaseModel):
         return f"{self.quantity} of {self.product.name}"
 
     def total_price(self):
-        return self.quantity * self.product.price
+        return self.quantity * float(self.product.price)
 
     def discount_total_price(self):
-        discount = self.product.discount or 0
+        discount = float(self.product.discount or 0)
         return self.quantity * discount
 
     def final_price(self):

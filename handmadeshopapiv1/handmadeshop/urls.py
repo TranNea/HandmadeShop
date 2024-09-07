@@ -13,7 +13,7 @@ r.register('productcomments', views.ProductCommentViewSet, basename='productcomm
 r.register('categories', views.CategoryViewSet, basename='categories')
 r.register('wishlists', views.WishlistViewSet, basename='wishlists')
 r.register('carts', views.CartViewSet, basename='carts')
-r.register('oders', views.OrderViewSet, basename='oders')
+r.register('orders', views.OrderViewSet, basename='orders')
 r.register('vouchers', views.VoucherViewSet, basename='vouchers')
 r.register('refunds', views.RefundViewSet, basename='refunds')
 

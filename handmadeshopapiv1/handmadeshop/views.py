@@ -163,31 +163,35 @@ class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveA
 
 
 class CartViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
-    queryset = Cart.objects.filter(items__isnull=False)
+    queryset = Cart.objects.all()
     serializer_class = serializers.CartSerializer
     permission_classes = [perms.CartOwner]
 
-    def get_cart(self):
-        cart, created = Cart.objects.get_or_create(user=self.request.user)
-        return cart
+    def get_cart_items(self):
+        cart = Cart.objects.get(user=self.request.user)
+        items = Item.objects.filter(cart=cart)
+        return items
 
     @action(methods=['post'], url_path='items', detail=False)
     def add_items(self, request):
+        cart = Cart.objects.get(user=self.request.user)
         product_id = request.data.get('product_id')
-        quantity = int(request.data.get('quantity', 1))
+        product = Product.objects.filter(id=product_id).first()
 
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
+        if not product:
             return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        cart = self.get_cart()
-        item, created = Item.objects.get_or_create(cart=cart, product=product)
-        if not created:
-            item.quantity += quantity
-        item.save()
+        quantity = request.data.get('quantity', 1)
+        item, created = Item.objects.get_or_create(cart=cart, product=product, defaults={
+            'quantity': quantity
+        })
 
-        return Response(serializers.ItemSerializer(item).data, status=status.HTTP_201_CREATED)
+        if not created:
+            item.quantity += int(quantity)
+            item.save()
+            return Response({"detail": "Item quantity updated in cart."}, status=status.HTTP_200_OK)
+
+        return Response({"detail": "Item added to cart."}, status=status.HTTP_201_CREATED)
 
     @action(methods=['delete'], url_path='cartitems', detail=False)
     def delete_cartitems(self, request):
@@ -198,7 +202,7 @@ class CartViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
         except Product.DoesNotExist:
             return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        cart = self.get_cart()
+        cart = Cart.objects.get(user=self.request.user)
         item = Item.objects.filter(cart=cart, product=product).first()
 
         if item:
@@ -211,6 +215,7 @@ class CartViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
 class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Order.objects.all()
     serializer_class = serializers.OrderSerializer
+    permission_classes = [perms.CartOwner]
 
     def get_items(self):
         cart = Cart.objects.filter(user=self.request.user).first()
@@ -220,7 +225,7 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
     def create_order(self, request):
         user = request.user
         payment_method = request.data.get('payment_method', 'C')
-        shipping_address = request.data.get('shipping_address')
+        shipping_address = request.data.get('shipping_address', '539 Hương Lộ 3, Sơn Kỳ, Tân Phú, TP. Hồ Chí Minh')
         voucher_code = request.data.get('voucher_code')
 
         voucher = None
@@ -237,13 +242,13 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
             voucher=voucher
         )
 
-        cart_items = self.get_cart_items()
+        cart_items = self.get_items()
         for item in cart_items:
             item.order = order
             item.cart = None
             item.save()
 
-        Cart.objects.filter(user=user).delete()
+        Cart.objects.filter(user=user).update(items=None)
 
         return Response(serializers.OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 

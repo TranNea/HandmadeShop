@@ -42,7 +42,7 @@ class CartAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'price', 'quantity', 'category', 'status']
+    list_display = ['id', 'name', 'price', 'quantity', 'category', 'status']
     search_fields = ['name', 'description']
     list_filter = ['price', 'category', 'status']
 
