@@ -1,5 +1,5 @@
 import React from "react";
-import { FaFacebook, FaInstagram} from "react-icons/fa";
+import { FaFacebook, FaInstagram } from "react-icons/fa";
 import FooterListTitle from "./FooterListTitle";
 import payment from "../../assets/images/payment.png";
 
@@ -13,7 +13,6 @@ const Footer = () => {
                     <div className="flex flex-col gap-6">
                         <p className="text-base w-full xl:w-[80%]">
                             At "Chau Crochet Shop," we believe that every thread tells a unique story. 
-                            Let your imagination run wild, and let your hands bring your vision to life. 
                             Whether you're a seasoned crafter or just embarking on your creative journey or just a customer, we've got something special for you.
                         </p>
                         <ul className="flex items-center gap-2">
@@ -22,7 +21,7 @@ const Footer = () => {
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                <li className="w-7 h-7 bg-primeColor text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center hover:bg-black duration-300">
+                                <li className="w-7 h-7 bg-black text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center duration-300">
                                     <FaInstagram />
                                 </li>
                             </a>
@@ -31,7 +30,7 @@ const Footer = () => {
                                 target="_blank"
                                 rel="noreferrer"
                             >
-                                <li className="w-7 h-7 bg-primeColor text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center hover:bg-black duration-300">
+                                <li className="w-7 h-7 bg-black text-gray-100 hover:text-white cursor-pointer text-lg rounded-full flex justify-center items-center duration-300">
                                     <FaFacebook />
                                 </li>
                             </a>
@@ -43,19 +42,16 @@ const Footer = () => {
                     <FooterListTitle title="Shop" />
                     <ul className="flex flex-col gap-2">
                         <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                            Mihoyo's Amigurumi
+                            Home
                         </li>
                         <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                            Amigurumi
+                            Product
                         </li>
                         <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                            Key chain
+                            About Us
                         </li>
                         <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                            Home appliances
-                        </li>
-                        <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                            New Arrivals
+                            Contact Us
                         </li>
                     </ul>
                 </div>
@@ -70,7 +66,7 @@ const Footer = () => {
                             Orders
                         </li>
                         <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
-                            Favourite
+                            Wishlist
                         </li>
                     </ul>
                 </div>
