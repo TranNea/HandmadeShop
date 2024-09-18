@@ -1,5 +1,8 @@
-import logo from './logo.svg';
 import './App.css';
+import React from "react";
+import ReactDOM from "react-dom";
+import './assets/main.css';
+ReactDOM.render(<App />, document.getElementById("root"));
 
 function App() {
   return (
