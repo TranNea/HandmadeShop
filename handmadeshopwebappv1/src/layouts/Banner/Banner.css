@@ -1,0 +1,10 @@
+.each-slide-effect > div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-size: cover;
+    height: 500px;
+    width: 100vw;
+    overflow: hidden;
+    background-repeat: no-repeat;
+}

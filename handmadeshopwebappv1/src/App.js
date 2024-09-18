@@ -8,6 +8,7 @@ import Header from './layouts/Header/Header';
 import Footer from './layouts/Footer/Footer';
 import Home from './components/Home';
 import HeaderBottom from './layouts/Header/HeaderBottom';
+import FooterBottom from './layouts/Footer/FooterBottom';
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
@@ -23,6 +24,7 @@ function App() {
         </Routes>
       </Container>
       <Footer />
+      <FooterBottom />
     </BrowserRouter>
   );
 }

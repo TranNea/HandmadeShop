@@ -530,8 +530,17 @@ video {
 .mb-6 {
   margin-bottom: 1.5rem;
 }
+.ml-2 {
+  margin-left: 0.5rem;
+}
+.mr-\[1px\] {
+  margin-right: 1px;
+}
 .mt-2 {
   margin-top: 0.5rem;
+}
+.mt-\[2px\] {
+  margin-top: 2px;
 }
 .inline {
   display: inline;
@@ -541,6 +550,12 @@ video {
 }
 .grid {
   display: grid;
+}
+.hidden {
+  display: none;
+}
+.h-1\/2 {
+  height: 50%;
 }
 .h-20 {
   height: 5rem;
@@ -632,6 +647,9 @@ video {
 .border-b-\[1px\] {
   border-bottom-width: 1px;
 }
+.border-t-\[1px\] {
+  border-top-width: 1px;
+}
 .border-b-gray-200 {
   --tw-border-opacity: 1;
   border-bottom-color: rgb(229 231 235 / var(--tw-border-opacity));
@@ -685,6 +703,9 @@ video {
   padding-top: 5rem;
   padding-bottom: 5rem;
 }
+.pb-20 {
+  padding-bottom: 5rem;
+}
 .pb-4 {
   padding-bottom: 1rem;
 }
@@ -693,6 +714,9 @@ video {
 }
 .pr-6 {
   padding-right: 1.5rem;
+}
+.pt-10 {
+  padding-top: 2.5rem;
 }
 .text-center {
   text-align: center;
@@ -704,6 +728,10 @@ video {
 .text-lg {
   font-size: 1.125rem;
   line-height: 1.75rem;
+}
+.text-sm {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
 }
 .text-xl {
   font-size: 1.25rem;
@@ -749,6 +777,9 @@ video {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter, -webkit-backdrop-filter;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
+}
+.duration-200 {
+  transition-duration: 200ms;
 }
 .duration-300 {
   transition-duration: 300ms;
@@ -811,8 +842,28 @@ video {
 }
   @media (min-width: 768px) {
 
+  .md\:mt-0 {
+    margin-top: 0px;
+  }
+
+  .md\:inline-flex {
+    display: inline-flex;
+  }
+
+  .md\:w-2\/3 {
+    width: 66.666667%;
+  }
+
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .md\:flex-row {
+    flex-direction: row;
+  }
+
+  .md\:items-center {
+    align-items: center;
   }
 
   .md\:border-r-\[2px\] {
@@ -829,6 +880,10 @@ video {
     height: 6rem;
   }
 
+  .lg\:w-1\/2 {
+    width: 50%;
+  }
+
   .lg\:w-\[60\%\] {
     width: 60%;
   }
@@ -843,6 +898,10 @@ video {
 
   .lg\:items-center {
     align-items: center;
+  }
+
+  .lg\:gap-10 {
+    gap: 2.5rem;
   }
 
   .lg\:pb-0 {
