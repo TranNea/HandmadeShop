@@ -14,4 +14,4 @@ class CommentPaginator(pagination.PageNumberPagination):
 
 
 class BlogPaginator(pagination.PageNumberPagination):
-    page_size = 5
+    page_size = 4

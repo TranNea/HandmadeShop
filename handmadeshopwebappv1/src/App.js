@@ -11,6 +11,8 @@ import HeaderBottom from './layouts/Header/HeaderBottom';
 import FooterBottom from './layouts/Footer/FooterBottom';
 import About from './layouts/About/About';
 import Contact from './layouts/Contact/Contact';
+import Blog from './components/Blog/Blog';
+
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
@@ -25,6 +27,7 @@ function App() {
           <Route path='/' element={<Home />} />
           <Route path='/about' element={<About />} />
           <Route path='/contact' element={<Contact />} />
+          <Route path='/blog' element={<Blog />} />
         </Routes>
       </Container>
       <Footer />

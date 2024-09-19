@@ -49,7 +49,8 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'rest_framework',
     'drf_yasg',
-    'oauth2_provider'
+    'oauth2_provider',
+    'corsheaders'
 ]
 
 REST_FRAMEWORK = {
@@ -68,6 +69,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware'
 ]
 
 ROOT_URLCONF = 'handmadeshopapiv1.urls'
@@ -155,3 +158,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CLIENT_ID='RdRtHjCe8kucUQot4c2xDlDoYrMIHUg5ay3kKqGA'
 CLIENT_SECRET='c1t1MseM5OOCkC46Ol7NvpoECyblHyJNKOXz5Zbc5Gj1OQW5tzjXKmEM3l9ai0x6m60uZ2hhXOkHrNOa5uuMtjS5vV7ruLyfyHObwOHBbttHfXHufbIArzbiPQb5uZ79'
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]

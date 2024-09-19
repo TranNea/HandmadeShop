@@ -42,9 +42,16 @@ class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,g
 
 
 class BlogViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
-    queryset = Blog.objects.all()
+    queryset = Blog.objects.all().order_by('-id')
     serializer_class = serializers.BlogSerializer
     pagination_class = paginators.BlogPaginator
+
+    def filter_queryset(self, queryset):
+        kw = self.request.query_params.get('kw')
+        if self.action.__eq__('list') and kw:
+            queryset = queryset.filter(subject__icontains=kw)
+
+        return queryset
 
     @action(methods=['get'], url_path='blogcomments', detail=True)
     def get_blogcomment(self, request, pk):
