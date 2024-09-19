@@ -9,6 +9,8 @@ import Footer from './layouts/Footer/Footer';
 import Home from './components/Home';
 import HeaderBottom from './layouts/Header/HeaderBottom';
 import FooterBottom from './layouts/Footer/FooterBottom';
+import About from './layouts/About/About';
+import Contact from './layouts/Contact/Contact';
 
 ReactDOM.render(<App />, document.getElementById("root"));
 
@@ -21,6 +23,8 @@ function App() {
       <Container>
         <Routes>
           <Route path='/' element={<Home />} />
+          <Route path='/about' element={<About />} />
+          <Route path='/contact' element={<Contact />} />
         </Routes>
       </Container>
       <Footer />

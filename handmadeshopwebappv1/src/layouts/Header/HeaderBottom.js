@@ -4,6 +4,7 @@ import { FaSearch, FaUser, FaCaretDown, FaShoppingCart, FaHeart } from "react-ic
 import Flex from "../../layouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Form } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const HeaderBottom = () => {
     const [showUser, setShowUser] = useState(false);
