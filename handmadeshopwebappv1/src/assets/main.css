@@ -563,6 +563,9 @@ video {
 .mb-4 {
   margin-bottom: 1rem;
 }
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
 .mb-6 {
   margin-bottom: 1.5rem;
 }
@@ -703,6 +706,9 @@ video {
 }
 .rounded-xl {
   border-radius: 0.75rem;
+}
+.border {
+  border-width: 1px;
 }
 .border-b-2 {
   border-bottom-width: 2px;
@@ -852,6 +858,10 @@ video {
 .text-gray-400 {
   --tw-text-opacity: 1;
   color: rgb(156 163 175 / var(--tw-text-opacity));
+}
+.text-gray-700 {
+  --tw-text-opacity: 1;
+  color: rgb(55 65 81 / var(--tw-text-opacity));
 }
 .text-green-500 {
   --tw-text-opacity: 1;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Container, Row, Col } from "react-bootstrap";
+import { Button, Container } from "react-bootstrap";
 import { useSearchParams } from "react-router-dom";
 import API, { endpoints } from "../../configs/API";
 import Loading from "../../layouts/Loading";
