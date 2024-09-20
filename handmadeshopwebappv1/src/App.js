@@ -14,6 +14,8 @@ import Contact from './layouts/Contact/Contact';
 import Blog from './components/Blog/Blog';
 import BlogDetail from './components/Blog/BlogDetails';
 import Product from './components/Product/Product';
+import SpecialCase from './layouts/SpecialCase/SpecialCase';
+import ProductDetails from './components/Product/ProductDetails';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -24,6 +26,7 @@ function App() {
     <BrowserRouter>
       <Header />
       <HeaderBottom />
+      <SpecialCase />
       <Container>
         <Routes>
           <Route path='/' element={<Home />} />
@@ -31,7 +34,8 @@ function App() {
           <Route path='/contact' element={<Contact />} />
           <Route path='/blogs' element={<Blog />} />
           <Route path='/blogs/:blogId' element={<BlogDetail />} />
-          <Route path='/product' element={<Product />} />
+          <Route path='/products' element={<Product />} />
+          <Route path='/products/:productId' element={<ProductDetails />} />
         </Routes>
       </Container>
       <Footer />

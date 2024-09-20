@@ -2,7 +2,7 @@ from rest_framework import pagination
 
 
 class ProductPaginator(pagination.PageNumberPagination):
-    page_size = 5
+    page_size = 6
 
 
 class CategoryPaginator(pagination.PageNumberPagination):
