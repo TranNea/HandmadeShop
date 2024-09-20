@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from handmadeshop import serializers, paginators, perms
 from handmadeshop.models import *
+from .perms import CommentOwner
 
 # Create your views here.
 class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,generics.RetrieveAPIView):
@@ -53,16 +54,9 @@ class BlogViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
 
         return queryset
 
-    @action(methods=['get'], url_path='blogcomments', detail=True)
+    @action(methods=['get'], url_path='bcomments', detail=True)
     def get_blogcomment(self, request, pk):
         blogcomments = self.get_object().blogcomment_set.select_related('user').order_by('-id')
-
-        paginator = paginators.CommentPaginator()
-        page = paginator.paginate_queryset(blogcomments, request)
-        if page is not None:
-            serializer = serializers.BlogCommentSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
         return Response(serializers.BlogCommentSerializer(blogcomments, many=True).data)
 
     @action(methods=['post'], url_path='comments', detail=True)
@@ -74,7 +68,13 @@ class BlogViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
 class BlogCommentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = BlogComment.objects.all()
     serializer_class = serializers.BlogCommentSerializer
-    permission_classes = [perms.CommentOwner]
+
+
+    def get_permissions(self):
+        if self.action in ['destroy', 'update', 'partial_update']:
+            return [CommentOwner()]
+
+        return [permissions.AllowAny()]
 
 
 class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
@@ -105,13 +105,6 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
     @action(methods=['get'], url_path='productcomments', detail=True)
     def get_productcomment(self, request, pk):
         productcomments = self.get_object().productcomment_set.select_related('user').order_by('-id')
-
-        paginator = paginators.CommentPaginator()
-        page = paginator.paginate_queryset(productcomments, request)
-        if page is not None:
-            serializer = serializers.ProductCommentSerializer(page, many=True)
-            return paginator.get_paginated_response(serializer.data)
-
         return Response(serializers.ProductCommentSerializer(productcomments, many=True).data)
 
     @action(methods=['post'], url_path='comments', detail=True)
@@ -145,7 +138,12 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
 class ProductCommentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.DestroyAPIView, generics.UpdateAPIView):
     queryset = ProductComment.objects.all()
     serializer_class = serializers.ProductCommentSerializer
-    permission_classes = [perms.CommentOwner]
+
+    def get_permissions(self):
+        if self.action in ['destroy', 'update', 'partial_update']:
+            return [CommentOwner()]
+
+        return [permissions.AllowAny()]
 
 
 class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
