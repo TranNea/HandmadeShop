@@ -13,6 +13,7 @@ import About from './layouts/About/About';
 import Contact from './layouts/Contact/Contact';
 import Blog from './components/Blog/Blog';
 import BlogDetail from './components/Blog/BlogDetails';
+import Product from './components/Product/Product';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -30,6 +31,7 @@ function App() {
           <Route path='/contact' element={<Contact />} />
           <Route path='/blogs' element={<Blog />} />
           <Route path='/blogs/:blogId' element={<BlogDetail />} />
+          <Route path='/product' element={<Product />} />
         </Routes>
       </Container>
       <Footer />
