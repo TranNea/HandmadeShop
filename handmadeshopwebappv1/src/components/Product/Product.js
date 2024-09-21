@@ -28,12 +28,15 @@ const Product = () => {
                 }
 
                 try {
-                    const res = await API.get(url);
-                    setProducts(res.data.results);
+                    let res = await API.get(url);
 
-                    if (res.data.next === null) {
+                    if (page === 1)
+                        setProducts(res.data.results);
+                    else if (page > 1)
+                        setProducts(prevProducts => [...prevProducts, ...res.data.results]);
+
+                    if (res.data.next === null)
                         setPage(0);
-                    }
                 } catch (ex) {
                     console.error(ex);
                 }
@@ -55,6 +58,10 @@ const Product = () => {
     useEffect(() => {
         loadCategories();
     }, []);
+
+    useEffect(() => {
+        setPage(1);
+    }, [selectedCategory]);
 
     const loadMore = () => {
         setPage(page + 1);
@@ -123,7 +130,6 @@ const styles = {
         borderRight: '1px solid #ddd',
         alignSelf: 'flex-start',
         position: 'sticky',
-        top: '0',
     },
     categoryList: {
         listStyle: 'none',

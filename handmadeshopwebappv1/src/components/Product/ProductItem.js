@@ -90,24 +90,6 @@ const ProductItem = ({ product }) => {
     };
 
     return (
-        // <Card style={{ border: '2px solid #007bff', borderRadius: '0.5rem', padding: '0.5rem', width: '18rem', height: '28rem', position: 'relative' }}>
-        //     {product.image1 && (<Card.Img variant="top" src={product.image1} style={{ width: '18rem', height: '13rem' }} />)}
-
-        //     <Card.Body>
-        //         <Card.Title>{product.name}</Card.Title>
-
-        //         <Card.Text>{product.price.toLocaleString("en")} VNĐ</Card.Text>
-
-        //         <Button variant="danger" className="m-1" >Add to Cart</Button>
-
-        //         <Link to={url} style={{ textDecoration: 'none' }}>
-        //             <Button variant="primary" className="m-1" >View Details</Button>
-        //         </Link>
-
-        //         <Button variant="danger" className="m-1" >Add to Wishlist</Button>
-        //     </Card.Body>
-        // </Card>
-
         <div style={styles.productItem}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -117,9 +99,13 @@ const ProductItem = ({ product }) => {
                 <div style={styles.actionOverlay}>
                     <ul style={{ listStyle: 'none', padding: '0', margin: '0', width: '100%' }}>
                         <li
-                            style={{ ...styles.actionItem, ...(hoveredAction === 'addToCart' ? styles.actionItemHover : {}) }}
-                            onMouseEnter={() => setHoveredAction('addToCart')}
-                            onMouseLeave={() => setHoveredAction(null)}
+                            style={{
+                                ...styles.actionItem,
+                                ...(product.status === 'O' ? { color: 'lightgray', cursor: 'not-allowed' } : (hoveredAction === 'addToCart' ? styles.actionItemHover : {})),
+                                pointerEvents: product.status === 'O' ? 'none' : 'auto',
+                            }}
+                            onMouseEnter={() => product.status !== 'O' && setHoveredAction('addToCart')}
+                            onMouseLeave={() => product.status !== 'O' && setHoveredAction(null)}
                         >
                             Add to Cart <FaShoppingCart />
                         </li>
