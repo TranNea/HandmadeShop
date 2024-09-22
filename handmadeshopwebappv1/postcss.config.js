@@ -4,4 +4,9 @@ module.exports = {
         tailwindcss('./tailwind.js'),
         require('autoprefixer')
     ],
+    devServer: {
+        client: {
+            overlay: false,
+        }
+    }
 };
