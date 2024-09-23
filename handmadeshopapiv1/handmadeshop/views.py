@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from handmadeshop import serializers, paginators, perms
 from handmadeshop.models import *
 from .perms import CommentOwner
+from django.db.models import Q
 
 # Create your views here.
 class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,generics.RetrieveAPIView):
@@ -90,16 +91,16 @@ class ProductViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAP
     def get_queryset(self):
         queryset = self.queryset
 
-        q = self.request.query_params.get('q')
+        kw = self.request.query_params.get('kw')
         cate_id = self.request.query_params.get('category_id')
-        product_status = self.request.query_params.get('status')
 
-        if q:
-            queryset = queryset.filter(name__icontains=q)
+        if self.action.__eq__('list') and kw:
+            queryset = queryset.filter(
+                Q(name__icontains=kw) | Q(description__icontains=kw)
+            )
         if cate_id:
             queryset = queryset.filter(category_id=cate_id)
-        if product_status:
-            queryset = queryset.filter(status=product_status)
+
         return queryset
 
     @action(methods=['get'], url_path='productcomments', detail=True)

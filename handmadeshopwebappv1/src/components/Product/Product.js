@@ -13,14 +13,16 @@ const Product = () => {
     const [categories, setCategories] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
 
+    
+
     useEffect(() => {
         const loadProducts = async () => {
             if (page > 0) {
                 let url = `${endpoints['products']}?page=${page}`;
-                const keyword = q.get("kw");
 
-                if (keyword) {
-                    url += `&q=${keyword}`;
+                let kw = q.get("kw");
+                if (kw !== null) {
+                    url += `&kw=${kw}`;
                 }
 
                 if (selectedCategory) {
@@ -44,7 +46,7 @@ const Product = () => {
         };
 
         loadProducts();
-    }, [page, useSearchParams, selectedCategory]);
+    }, [page, selectedCategory, q]);
 
     const loadCategories = async () => {
         try {
@@ -61,7 +63,7 @@ const Product = () => {
 
     useEffect(() => {
         setPage(1);
-    }, [selectedCategory]);
+    }, [selectedCategory, q]);
 
     const loadMore = () => {
         setPage(page + 1);

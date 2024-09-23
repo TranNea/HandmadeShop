@@ -4,16 +4,15 @@ import { FaSearch, FaUser, FaCaretDown, FaShoppingCart, FaHeart } from "react-ic
 import Flex from "../../layouts/Flex";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Form } from 'react-bootstrap';
-import Dropdown from 'react-bootstrap/Dropdown';
 
 const HeaderBottom = () => {
     const [showUser, setShowUser] = useState(false);
     const navigate = useNavigate();
     const [kw, setKw] = useState("");
 
-    const submit = (e) => {
-        e.preventDefault();
-        navigate(`/?kw=${kw}`);
+    const search = (evt) => {
+        evt.preventDefault();
+        navigate(`/products/?kw=${kw}`);
     };
 
     const toggleUserMenu = () => {
@@ -40,13 +39,13 @@ const HeaderBottom = () => {
                     <div></div>
 
                     <div className="relative w-full lg:w-[600px] h-[50px] text-base text-primeColor bg-white flex items-center gap-2 justify-between px-6 rounded-xl">
-                        <Form inline onSubmit={submit} className="flex w-full">
+                        <Form inline onSubmit={search} className="flex w-full">
                             <Form.Control
-                                type="text"
-                                placeholder="Search your products here"
+                                type="search"
+                                placeholder="Search here..."
                                 className="flex-1 h-full outline-none placeholder:text-[#C4C4C4] placeholder:text-[14px]"
                                 value={kw}
-                                onChange={e => setKw(e.target.value)}
+                                onChange={evt => setKw(evt.target.value)}
                             />
                             <Button type="submit" className="ml-2">
                                 <FaSearch className="w-5 h-5" />
