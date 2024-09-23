@@ -78,6 +78,18 @@
     font-size: 2rem;
     font-weight: bold;
     margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.heart-icon {
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.heart-icon:hover {
+    color: red;
 }
 
 .price-section {

@@ -6,6 +6,7 @@ import { Button, Col, Form, Image, Row } from "react-bootstrap";
 import avatar from "../../assets/images/avatar.jpeg";
 import Moment from "react-moment";
 import "./ProductDetails.css";
+import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
 
 const ProductDetails = () => {
     const { productId } = useParams();
@@ -14,6 +15,7 @@ const ProductDetails = () => {
     const [content, setContent] = useState("");
     const [loading, setLoading] = useState(false)
     const [mainImage, setMainImage] = useState(null);
+    const [isWishlisted, setIsWishlisted] = useState(false);
 
     useEffect(() => {
         const loadProduct = async () => {
@@ -68,6 +70,10 @@ const ProductDetails = () => {
     }
 
     const discountedPrice = product.discount ? product.price - product.discount : null;
+
+    const addToWishlist = () => {
+        setIsWishlisted(!isWishlisted);
+    };
 
     return (
         <div className="outer-container">
@@ -125,7 +131,12 @@ const ProductDetails = () => {
                     </div>
 
                     <div className="right-column">
-                        <h1 className="product-name">{product.name}</h1>
+                        <h1 className="product-name">
+                            {product.name}
+                            <span onClick={addToWishlist} className="heart-icon">
+                                {isWishlisted ? <BsSuitHeartFill color="red" /> : <BsSuitHeart />}
+                            </span>
+                        </h1>
                         <div className="price-section">
                             <span className={product.discount ? "old-price" : "price"}>
                                 {product.price.toLocaleString("en")} VNĐ
@@ -144,13 +155,8 @@ const ProductDetails = () => {
                             <p className="quantity">Quantity: {product.quantity}</p>
                         )}
 
-
                         {product.status === 'S' && (
-                            <Button
-                                className="add-to-cart-button"
-                            >
-                                Add to Cart
-                            </Button>
+                            <Button className="add-to-cart-button">Add to Cart</Button>
                         )}
                     </div>
                 </div>

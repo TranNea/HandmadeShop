@@ -87,7 +87,20 @@ const ProductItem = ({ product }) => {
             fontSize: '0.875rem',
             margin: '0',
         },
+        priceSection: {
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+        },
+        oldPrice: {
+            color: '#767676',
+            fontSize: '0.875rem',
+            margin: '0',
+            textDecoration: 'line-through',
+        },
     };
+
+    const discountedPrice = product.discount ? product.price - product.discount : null;
 
     return (
         <div style={styles.productItem}
@@ -130,9 +143,21 @@ const ProductItem = ({ product }) => {
                     </ul>
                 </div>
             </div>
+
             <div style={styles.productInfo}>
                 <h2 style={styles.productName}>{product.name}</h2>
-                <p style={styles.productPrice}>{product.price.toLocaleString("en")} VNĐ</p>
+
+                <div style={styles.priceSection}>
+                    {product.discount && (
+                        <span style={styles.oldPrice}>
+                            {product.price.toLocaleString("en")} VNĐ
+                        </span>
+                    )}
+                    <span style={styles.productPrice}>
+                        {discountedPrice ? discountedPrice.toLocaleString("en") : product.price.toLocaleString("en")} VNĐ
+                    </span>
+                </div>
+                {/* <p style={styles.productPrice}>{product.price.toLocaleString("en")} VNĐ</p> */}
             </div>
         </div>
     );
