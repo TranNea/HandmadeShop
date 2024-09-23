@@ -7,18 +7,12 @@ import BlogItem from "./BlogItem";
 
 const Blogs = () => {
     const [blogs, setBlogs] = useState([]);
-    const [searchParams] = useSearchParams();
     const [page, setPage] = useState(1);
 
     useEffect(() => {
         const loadBlogs = async () => {
             if (page > 0) {
                 let url = `${endpoints['blogs']}?page=${page}`;
-                const keyword = searchParams.get("kw");
-
-                if (keyword) {
-                    url += `&q=${keyword}`;
-                }
 
                 try {
                     const res = await API.get(url);
@@ -34,7 +28,7 @@ const Blogs = () => {
         };
 
         loadBlogs();
-    }, [page, searchParams]);
+    }, [page]);
 
     if (blogs.length === 0) {
         return <Loading />;

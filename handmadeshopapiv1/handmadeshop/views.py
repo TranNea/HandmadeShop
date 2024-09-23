@@ -48,13 +48,6 @@ class BlogViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
     serializer_class = serializers.BlogSerializer
     pagination_class = paginators.BlogPaginator
 
-    def filter_queryset(self, queryset):
-        kw = self.request.query_params.get('kw')
-        if self.action.__eq__('list') and kw:
-            queryset = queryset.filter(subject__icontains=kw)
-
-        return queryset
-
     @action(methods=['get'], url_path='bcomments', detail=True)
     def get_blogcomment(self, request, pk):
         blogcomments = self.get_object().blogcomment_set.select_related('user').order_by('-id')
