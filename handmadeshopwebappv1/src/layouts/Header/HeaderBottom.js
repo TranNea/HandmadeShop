@@ -93,7 +93,7 @@ const HeaderBottom = () => {
                                                 Login
                                             </li>
                                         </Link>
-                                        <Link to="/" onClick={() => setShowUser(false)}>
+                                        <Link to="/register" onClick={() => setShowUser(false)}>
                                             <li className="text-gray-400 px-4 py-2 border-b-[1px] border-b-gray-400 hover:border-b-white hover:text-white duration-300 cursor-pointer">
                                                 Sign Up
                                             </li>

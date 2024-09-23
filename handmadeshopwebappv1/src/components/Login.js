@@ -63,7 +63,7 @@ const Login = () => {
         <div className="max-w-container mx-auto px-4">
             <h1 className="text-5xl text-primeColor font-titleFont text-center font-bold pb-10">SIGN IN</h1>
 
-            {err ? <div className="alert alert-danger">{err}</div> : ""}
+            {err ? <div className="alert text-red-600">{err}</div> : ""}
 
             <Form onSubmit={login} className="w-[500px] h-auto py-6 flex flex-col gap-6">
                 <Form.Group controlId="formBasicEmail">
@@ -97,7 +97,7 @@ const Login = () => {
 
             <p className="text-sm text-center font-titleFont font-medium">
                 Don't have an Account?{" "}
-                <Link to="/">
+                <Link to="/register">
                     <span className="hover:text-blue-600 duration-300">Sign up</span>
                 </Link>
             </p>

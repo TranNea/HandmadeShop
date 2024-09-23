@@ -21,6 +21,7 @@ import { UserContext } from './configs/MyContext';
 import UserReducer from './reducers/UserReducer';
 import { useReducer } from 'react';
 import cookie from 'react-cookies';
+import Register from './components/Register';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -49,6 +50,7 @@ function App() {
             <Route path='/products' element={<Product />} />
             <Route path='/products/:productId' element={<ProductDetails />} />
             <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
           </Routes>
         </Container>
         <Footer />
