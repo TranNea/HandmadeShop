@@ -12,7 +12,7 @@ const Register = () => {
         "email": "",
         "firstName": "",
         "lastName": "",
-        "address": "",
+        "address1": "",
     })
     const [loading, setLoading] = useState(false)
     const [err, setErr] = useState()
@@ -28,7 +28,7 @@ const Register = () => {
             form.append("email", user.email)
             form.append("first_name", user.firstName)
             form.append("last_name", user.lastName)
-            form.append("address1", user.address)
+            form.append("address1", user.address1)
             form.append("is_active", true)
 
             try {
@@ -132,8 +132,8 @@ const Register = () => {
                 <Form.Group controlId="address1">
                     <Form.Label className="text-base font-titleFont font-semibold px-2">Address</Form.Label>
                     <Form.Control type="text"
-                        value={user.address}
-                        onChange={e => setValue(e.target.value, "address")}
+                        value={user.address1}
+                        onChange={e => setValue(e.target.value, "address1")}
                         className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                         placeholder="Your Address" />
                 </Form.Group>

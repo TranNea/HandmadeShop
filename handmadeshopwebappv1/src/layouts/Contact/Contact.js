@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import emailjs from '@emailjs/browser';
 
 const Contact = () => {
     const [clientName, setclientName] = useState("");
@@ -10,6 +11,7 @@ const Contact = () => {
     const [errMessages, setErrMessages] = useState("");
 
     const [successMsg, setSuccessMsg] = useState("");
+    const form = useRef();
 
     const handleName = (e) => {
         setclientName(e.target.value);
@@ -56,6 +58,19 @@ const Contact = () => {
                 `Thank you dear ${clientName}, Your messages has been received successfully. Futher details will sent to you by your email at ${email}.`
             );
         }
+
+        emailjs
+            .sendForm('service_ygwsdij', 'template_2ztpbdi', form.current, {
+                publicKey: 'KLUwmFbpjr-64wyPD',
+            })
+            .then(
+                () => {
+                    console.log('SUCCESS!');
+                },
+                (error) => {
+                    console.log('FAILED...', error.text);
+                },
+            );
     };
 
     return (
@@ -65,23 +80,23 @@ const Contact = () => {
             {successMsg ? (
                 <p className="pb-20 w-96 font-medium text-green-500">{successMsg}</p>
             ) : (
-                <form className="pb-20">
+                <form className="pb-20" ref={form}>
                     <h1 className="font-titleFont font-semibold text-3xl">
                         Fill up a Form
                     </h1>
 
                     <div className="w-[500px] h-auto py-6 flex flex-col gap-6">
-
                         <div>
                             <p className="text-base font-titleFont font-semibold px-2">
                                 Name
                             </p>
 
-                            <input
+                            <input required
                                 onChange={handleName}
                                 value={clientName}
                                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
                                 type="text"
+                                name="user_name"
                                 placeholder="Enter your name here"
                             />
 
@@ -98,12 +113,12 @@ const Contact = () => {
                                 Email
                             </p>
 
-                            <input
+                            <input required
                                 onChange={handleEmail}
                                 value={email}
                                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"
-                                type="email"
-                                placeholder="Enter your name here"
+                                type="email" name="user_email"
+                                placeholder="Enter your email here"
                             />
 
                             {errEmail && (
@@ -119,14 +134,15 @@ const Contact = () => {
                                 Messages
                             </p>
 
-                            <textarea
+                            <textarea required
                                 onChange={handleMessages}
                                 value={messages}
                                 cols="30"
                                 rows="3"
                                 className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor resize-none"
                                 type="text"
-                                placeholder="Enter your name here"
+                                name="message"
+                                placeholder="Enter your message here"
                             ></textarea>
 
                             {errMessages && (

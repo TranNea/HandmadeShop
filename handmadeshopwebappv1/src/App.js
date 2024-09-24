@@ -22,6 +22,7 @@ import UserReducer from './reducers/UserReducer';
 import { useReducer } from 'react';
 import cookie from 'react-cookies';
 import Register from './components/Register';
+import Profile from './components/Profile';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -51,6 +52,7 @@ function App() {
             <Route path='/products/:productId' element={<ProductDetails />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/profile' element={<Profile />} />
           </Routes>
         </Container>
         <Footer />
