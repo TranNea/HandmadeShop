@@ -16,6 +16,9 @@ export let endpoints = {
     'login': '/o/token/',
     'current-user': '/users/current-user/',
     'register': '/users/',
+    'wishlists': '/wishlists/',
+    'add-wishlists': (productId) => `/products/${productId}/wishlists/`,
+    'remove-wishlists': (productId) => `/products/${productId}/remove-wishlist/`,
 }
 
 export const authAPI = () => axios.create({

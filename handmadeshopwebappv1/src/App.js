@@ -23,6 +23,7 @@ import { useReducer } from 'react';
 import cookie from 'react-cookies';
 import Register from './components/Register';
 import Profile from './components/Profile';
+import Wishlist from './components/Wishlist';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -53,6 +54,7 @@ function App() {
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/profile' element={<Profile />} />
+            <Route path='/wishlists' element={<Wishlist />} />
           </Routes>
         </Container>
         <Footer />

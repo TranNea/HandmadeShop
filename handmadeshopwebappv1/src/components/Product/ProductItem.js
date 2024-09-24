@@ -1,17 +1,32 @@
 import React, { useState } from 'react';
-import { Col, Row, Image } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
+import { Image } from 'react-bootstrap';
 import { Link } from "react-router-dom";
-import { FaShoppingCart, FaExchangeAlt } from 'react-icons/fa';
+import { FaShoppingCart } from 'react-icons/fa';
 import { MdOutlineLabelImportant } from 'react-icons/md';
 import { BsSuitHeartFill } from 'react-icons/bs';
+import { authAPI, endpoints } from '../../configs/API';
 
 const ProductItem = ({ product }) => {
     const url = `/products/${product.id}`;
 
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredAction, setHoveredAction] = useState(null);
+
+    const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+
+    const addToWishlist = async () => {
+        setIsAddingToWishlist(true);
+        try {
+            await authAPI().post(endpoints['add-wishlists'](product.id));
+
+            alert("Added Product to Wishlist!");
+        } catch (error) {
+            console.error("Failed to add to wishlist:", error);
+            alert("Failed to add to Wishlist.");
+        } finally {
+            setIsAddingToWishlist(false);
+        }
+    };
 
     const styles = {
         productItem: {
@@ -134,9 +149,14 @@ const ProductItem = ({ product }) => {
                         </Link>
 
                         <li
-                            style={{ ...styles.actionItem, ...(hoveredAction === 'addToWishlist' ? styles.actionItemHover : {}) }}
+                            style={{
+                                ...styles.actionItem,
+                                ...(hoveredAction === 'addToWishlist' ? styles.actionItemHover : {}),
+                                pointerEvents: isAddingToWishlist ? 'none' : 'auto'
+                            }}
                             onMouseEnter={() => setHoveredAction('addToWishlist')}
                             onMouseLeave={() => setHoveredAction(null)}
+                            onClick={addToWishlist}
                         >
                             Add to Wishlist <BsSuitHeartFill />
                         </li>
@@ -157,7 +177,6 @@ const ProductItem = ({ product }) => {
                         {discountedPrice ? discountedPrice.toLocaleString("en") : product.price.toLocaleString("en")} VNĐ
                     </span>
                 </div>
-                {/* <p style={styles.productPrice}>{product.price.toLocaleString("en")} VNĐ</p> */}
             </div>
         </div>
     );

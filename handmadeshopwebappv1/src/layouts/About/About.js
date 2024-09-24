@@ -37,7 +37,7 @@ const About = () => {
                     We are excited to share our love for crochet with you and hope that our creations bring as much happiness to your life as they bring to ours.
                 </h1>
 
-                <Link to="/">
+                <Link to="/products">
                     <button className="w-52 h-10 bg-black text-white">
                         Continue Shopping
                     </button>

@@ -60,7 +60,7 @@ const Profile = () => {
             formData.append('email', email);
             formData.append('phone', phone);
             formData.append('address1', address1);
-            formData.append('address2', address2);
+            formData.append('address2', address2 || "");
 
             if (newPassword && newPassword === confirmPassword) {
                 formData.append('password', newPassword);

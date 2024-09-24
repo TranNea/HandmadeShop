@@ -62,7 +62,7 @@ const HeaderBottom = () => {
                     </div>
 
                     <div className="flex gap-4 mt-2 lg:mt-0 items-center pr-6 cursor-pointer relative">
-                        <Link to="/">
+                        <Link to="/wishlists">
                             <div className="relative">
                                 <FaHeart />
                             </div>

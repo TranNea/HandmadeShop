@@ -96,12 +96,11 @@ class ProductCommentSerializer(serializers.ModelSerializer):
 
 class WishlistSerializer(serializers.ModelSerializer):
     user = serializers.IntegerField(source='user.id', read_only=True)
-    product_id = serializers.IntegerField(source='product.id', read_only=True)
-    product_name = serializers.CharField(source='product.name', read_only=True)
+    product = ProductSerializer(read_only=True)
 
     class Meta:
         model = Wishlist
-        fields = ['id', 'user', 'product_id', 'product_name']
+        fields = ['id', 'user', 'product']
 
 
 class CartSerializer(serializers.ModelSerializer):

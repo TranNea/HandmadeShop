@@ -90,7 +90,7 @@ const Footer = () => {
                             </li>
                         </Link>
 
-                        <Link to="/">
+                        <Link to="/wishlists">
                             <li className="font-titleFont text-base text-lightText hover:text-black hover:underline decoration-[1px] decoration-gray-500 underline-offset-2 cursor-pointer duration-300">
                                 Wishlist
                             </li>
