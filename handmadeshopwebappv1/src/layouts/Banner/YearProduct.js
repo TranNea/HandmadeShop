@@ -59,7 +59,7 @@ const styles = {
 
 const YearProduct = () => {
     return (
-        <Link to="/">
+        <Link to="/products">
             <div style={styles.yearProduct}>
                 <div style={styles.content}>
                     <h1 style={styles.title}>

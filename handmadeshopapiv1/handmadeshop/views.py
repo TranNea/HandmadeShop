@@ -25,10 +25,15 @@ class UserViewSet(viewsets.ViewSet,generics.CreateAPIView,generics.ListAPIView,g
     @action(methods=['get', 'patch'], url_path='current-user', detail=False)
     def get_current_user(self, request):
         user = request.user
+
         if request.method.__eq__('PATCH'):
-            for k, v in request.data.items():
-                setattr(user, k, v)
-            user.save()
+            serializer = serializers.UserSerializer(user, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializers.UserSerializer(user).data)
 

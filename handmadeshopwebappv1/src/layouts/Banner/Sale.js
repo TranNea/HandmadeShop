@@ -10,18 +10,18 @@ const Sale = () => {
     return (
         <div className="container">
             <div className="image-wrapper large">
-                <Link to="/">
+                <Link to="/products">
                     <Image className="full-image" imgSrc={sale1} />
                 </Link>
             </div>
             <div className="image-column">
                 <div className="image-wrapper">
-                    <Link to="/">
+                    <Link to="/products">
                         <Image className="full-image" imgSrc={sale2} />
                     </Link>
                 </div>
                 <div className="image-wrapper">
-                    <Link to="/">
+                    <Link to="/products">
                         <Image className="full-image" imgSrc={sale3} />
                     </Link>
                 </div>

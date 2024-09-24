@@ -103,8 +103,8 @@ const Register = () => {
                 </Form.Group>
 
                 <Form.Group controlId="email">
-                    <Form.Label className="text-base font-titleFont font-semibold px-2">Email</Form.Label>
-                    <Form.Control type="email"
+                    <Form.Label className="text-base font-titleFont font-semibold px-2">Email <span className="text-red-600">(*)</span></Form.Label>
+                    <Form.Control type="email" required
                         value={user.email}
                         onChange={e => setValue(e.target.value, "email")}
                         className="w-full py-1 border-b-2 px-2 text-base font-medium placeholder:font-normal placeholder:text-sm outline-none focus-within:border-primeColor"

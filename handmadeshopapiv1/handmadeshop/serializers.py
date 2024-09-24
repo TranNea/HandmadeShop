@@ -13,6 +13,18 @@ class UserSerializer(serializers.ModelSerializer):
 
         return user
 
+    def update(self, instance, validated_data):
+        data = validated_data.copy()
+
+        if 'password' in data:
+            instance.set_password(data.pop('password'))
+
+        for attr, value in data.items():
+            setattr(instance, attr, value)
+
+        instance.save()
+        return instance
+
     class Meta:
         model = User
         fields = ['id', 'username', 'password', 'first_name', 'last_name', 'email', 'date_joined',
