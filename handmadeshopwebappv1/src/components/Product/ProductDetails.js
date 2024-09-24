@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import API, { endpoints } from "../../configs/API";
+import React, { useEffect, useState, useContext } from "react";
+import { Link, useParams } from "react-router-dom";
+import API, { authAPI, endpoints } from "../../configs/API";
 import Loading from "../../layouts/Loading";
 import { Button, Col, Form, Image, Row } from "react-bootstrap";
 import avatar from "../../assets/images/avatar.jpeg";
 import Moment from "react-moment";
 import "./ProductDetails.css";
 import { BsSuitHeart, BsSuitHeartFill } from 'react-icons/bs';
+import { UserContext } from "../../configs/MyContext";
 
 const ProductDetails = () => {
     const { productId } = useParams();
     const [product, setProduct] = useState(null);
     const [comments, setComments] = useState(null);
-    const [content, setContent] = useState("");
+    const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false)
     const [mainImage, setMainImage] = useState(null);
     const [isWishlisted, setIsWishlisted] = useState(false);
+
+    const [user,] = useContext(UserContext);
 
     useEffect(() => {
         const loadProduct = async () => {
@@ -44,25 +47,25 @@ const ProductDetails = () => {
     }, []);
 
 
-    // const addComment = (evt) => {
-    //     evt.preventDefault()
+    const addComment = (evt) => {
+        evt.preventDefault()
 
-    //     const process = async () => {
-    //         try {
-    //             let res = await authAPI().post(endpoints['b-comments'](blogId), {
-    //                 'content': content
-    //             })
-    //             setComments(curr => ([res.data, ...curr]))
-    //         } catch (ex) {
-    //             console.info(ex)
-    //         } finally {
-    //             setLoading(false)
-    //         }
-    //     }
+        const process = async () => {
+            try {
+                let res = await authAPI().post(endpoints['p-comments'](productId), {
+                    'description': description
+                })
+                setComments(curr => ([res.data, ...curr]))
+            } catch (ex) {
+                console.info(ex)
+            } finally {
+                setLoading(false)
+            }
+        }
 
-    //     setLoading(true)
-    //     process()
-    // }
+        setLoading(true)
+        process()
+    }
 
 
     if (product === null) {
@@ -164,31 +167,45 @@ const ProductDetails = () => {
 
             <hr />
 
+            <p className="text-xl font-bold" style={{ margin: '20px' }}> Comments </p>
+
+            {user === null ? <Link to="/login"
+                style={{ padding: '10px', margin: '20px' }}
+                className="bg-black mx-auto text-gray-200 h-10 font-titleFont text-base tracking-wide font-semibold hover:text-white duration-200"
+            >
+                Login to Comment
+            </Link> : (
+                <Form onSubmit={addComment} style={{ margin: '20px' }}>
+                    <Form.Group className="mb-3" controlId="content">
+                        <Form.Control as="textarea"
+                            value={description}
+                            onChange={e => setDescription(e.target.value)}
+                            style={{ border: '2px solid #ccc', padding: '10px', borderRadius: '5px', width: '70%' }}
+                            rows={3} placeholder="Your comment..." />
+                    </Form.Group>
+                    {loading ? <Loading /> : <Button
+                        className="bg-black mx-auto text-gray-200 h-10 font-titleFont text-base tracking-wide font-semibold hover:text-white duration-200"
+                        type="submit" variant="primary"
+                        style={{ padding: '0 10px', marginBottom: '20px' }}
+                    >
+                        Comment
+                    </Button>}
+                </Form>
+            )}
+
             {comments === null ? <Loading /> : (
                 comments.map(c => {
                     return (
                         <div className="comment-container">
                             <Image src={avatar} className="comment-avatar" alt={c.user.username} fluid rounded />
                             <div>
-                                <p dangerouslySetInnerHTML={{ __html: c.content }}></p>
+                                <p dangerouslySetInnerHTML={{ __html: c.description }}></p>
                                 <small>Comment by {c.user.username}. &nbsp;&nbsp;&nbsp;&nbsp; Time: <Moment fromNow>{c.created_date}</Moment></small>
                             </div>
                         </div>
                     )
                 })
             )}
-
-            {/* {user===null?<Link to="/login">Login</Link>:(
-                 <Form onSubmit={addComment}>
-                    <Form.Group className="mb-3" controlId="content">
-                        <Form.Control as="textarea" 
-                            value={content}
-                            onChange={e => setContent(e.target.value)}
-                            rows={3} placeholder="Your comment..." />
-                    </Form.Group>
-                    {loading?<Loading />:<Button type="submit" variant="primary">Comment</Button>}
-                </Form>
-            )} */}
         </div>
     );
 };

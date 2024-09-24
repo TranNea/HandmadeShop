@@ -15,9 +15,7 @@ const BlogItem = ({ blog }) => {
                 <Card.Body>
                     <Card.Title>{blog.title}</Card.Title>
 
-                    <Card.Text>
-                        {blog.short_description || blog.content.slice(0, 100) + '...'}
-                    </Card.Text>
+                    <Card.Text dangerouslySetInnerHTML={{ __html: blog.content.slice(0, 200) + '...' }}></Card.Text>
 
                     <Link to={url} style={{ textDecoration: 'none'}}>
                         <Button

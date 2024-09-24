@@ -44,10 +44,10 @@ const Blogs = () => {
 
     return (
         <div>
-            <div className="text-center mb-5">
+            <div style={{ textAlign: 'center', marginLeft: '100px'}}>
                 <h1 className="text-5xl text-primeColor font-titleFont font-bold pb-10">Free Patterns</h1>
                 <h1 className="text-3xl text-primeColor font-titleFont font-bold pb-10">New Tutorials Every Day</h1>
-                <p className="text-lg text-gray-700 mx-auto" style={{ maxWidth: '800px' }}>
+                <p className="text-lg text-gray-700 mx-auto" style={{ maxWidth: '1000px' }}>
                     Welcome to our blog! Here, you will find a variety of articles covering different topics,
                     insights, and stories that aim to inform and inspire you. Whether you're a seasoned crafter
                     or just beginning your creative journey, our blog offers something for everyone. From step-by-step
