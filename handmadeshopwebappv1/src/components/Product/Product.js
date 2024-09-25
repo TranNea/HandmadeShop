@@ -13,8 +13,6 @@ const Product = () => {
     const [categories, setCategories] = useState("");
     const [selectedCategory, setSelectedCategory] = useState(null);
 
-    
-
     useEffect(() => {
         const loadProducts = async () => {
             if (page > 0) {

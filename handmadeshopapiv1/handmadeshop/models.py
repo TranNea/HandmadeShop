@@ -49,10 +49,6 @@ class Blog(BaseModel):
     imagewidth = models.PositiveIntegerField(editable=False, default=401, null=True, blank=True)
     imageheight = models.PositiveIntegerField(editable=False, default=401, null=True, blank=True)
 
-    @property
-    def short_description(self):
-        return truncatechars(self.body, 250)
-
     def __str__(self):
          return self.title
 
@@ -129,8 +125,29 @@ class Wishlist(BaseModel):
         return f"{self.user} : {self.product}"
 
 
+class Item(BaseModel):
+    quantity = models.PositiveIntegerField(default=1)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.quantity} of {self.product.name}"
+
+    def total_price(self):
+        return self.quantity * float(self.product.price)
+
+    def discount_total_price(self):
+        discount = float(self.product.discount or 0)
+        return self.quantity * discount
+
+    def final_price(self):
+        if self.product.discount:
+            return self.total_price() - self.discount_total_price()
+        return self.total_price()
+
+
 class Cart(BaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    items = models.ManyToManyField(Item)
 
 
 class Voucher(BaseModel):
@@ -164,40 +181,18 @@ class Order(BaseModel):
 
     voucher = models.ForeignKey(Voucher, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.user.username
 
     def total_order_price(self):
         total = 0
-        for item in self.items.all():
+        for item in self.cart.items.all():
             total += item.final_price()
         if self.voucher:
             total -= self.voucher.value
         return total + 35000    #Tiền ship cố định 35000VNĐ cho mọi đơn hàng, địa chỉ
-
-
-class Item(BaseModel):
-    quantity = models.PositiveIntegerField(default=1)
-
-    cart = models.ForeignKey(Cart, related_name='items', on_delete=models.CASCADE, null=True, blank=True)
-    order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE, null=True, blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return f"{self.quantity} of {self.product.name}"
-
-    def total_price(self):
-        return self.quantity * float(self.product.price)
-
-    def discount_total_price(self):
-        discount = float(self.product.discount or 0)
-        return self.quantity * discount
-
-    def final_price(self):
-        if self.product.discount:
-            return self.discount_total_price()
-        return self.total_price()
 
 
 class Refund(BaseModel):

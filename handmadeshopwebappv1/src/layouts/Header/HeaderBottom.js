@@ -68,7 +68,7 @@ const HeaderBottom = () => {
                             </div>
                         </Link>
 
-                        <Link to="/">
+                        <Link to="/carts">
                             <div className="relative">
                                 <FaShoppingCart />
                             </div>

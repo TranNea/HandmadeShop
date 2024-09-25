@@ -103,17 +103,21 @@ class WishlistSerializer(serializers.ModelSerializer):
         fields = ['id', 'user', 'product']
 
 
+class ItemSerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+
+    class Meta:
+        model = Item
+        fields = ['id', 'quantity', 'product', 'total_price', 'discount_total_price', 'final_price']
+
+
 class CartSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
-    items = serializers.SerializerMethodField()
+    items = ItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items']
-
-    def get_items(self, obj):
-        items = obj.items.all()
-        return ItemSerializer(items, many=True).data
 
 
 class VoucherSerializer(serializers.ModelSerializer):
@@ -131,19 +135,10 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'payment_method', 'status', 'shipping_address', 'voucher', 'user', 'items', 'total_order_price']
+        fields = ['id', 'payment_method', 'status', 'shipping_address', 'voucher', 'user', 'total_order_price']
 
     def get_total_order_price(self, obj):
         return obj.total_order_price()
-
-
-class ItemSerializer(serializers.ModelSerializer):
-    product = ProductSerializer(read_only=True)
-    order = OrderSerializer(read_only=True)
-
-    class Meta:
-        model = Item
-        fields = ['id', 'quantity', 'product', 'cart', 'order', 'total_price', 'discount_total_price', 'final_price']
 
 
 class RefundSerializer(serializers.ModelSerializer):

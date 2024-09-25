@@ -68,7 +68,6 @@ class BlogCommentViewSet(viewsets.ViewSet, generics.ListAPIView, generics.Destro
     queryset = BlogComment.objects.all()
     serializer_class = serializers.BlogCommentSerializer
 
-
     def get_permissions(self):
         if self.action in ['destroy', 'update', 'partial_update']:
             return [CommentOwner()]
@@ -166,29 +165,30 @@ class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveA
         return Wishlist.objects.filter(user=user)
 
 
-class CartViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
+class CartViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Cart.objects.all()
     serializer_class = serializers.CartSerializer
     permission_classes = [perms.CartOwner]
 
-    def get_cart_items(self):
-        cart = Cart.objects.get(user=self.request.user)
+    def retrieve(self, request, *args, **kwargs):
+        # cart, created = Cart.objects.get_or_create(user=request.user)
+        cart = Cart.objects.get(user=request.user)
         items = Item.objects.filter(cart=cart)
-        return items
+
+        return Response(serializers.ItemSerializer(items, many=True).data, status=status.HTTP_200_OK)
 
     @action(methods=['post'], url_path='items', detail=False)
     def add_items(self, request):
-        cart = Cart.objects.get(user=self.request.user)
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
         product_id = request.data.get('product_id')
         product = Product.objects.filter(id=product_id).first()
-
-        if not product:
-            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
 
         quantity = request.data.get('quantity', 1)
         item, created = Item.objects.get_or_create(cart=cart, product=product, defaults={
             'quantity': quantity
         })
+
+        cart.items.add(item)
 
         if not created:
             item.quantity += int(quantity)
@@ -200,20 +200,17 @@ class CartViewSet(viewsets.ViewSet, generics.RetrieveAPIView):
     @action(methods=['delete'], url_path='cartitems', detail=False)
     def delete_cartitems(self, request):
         product_id = request.data.get('product_id')
+        product = Product.objects.get(id=product_id)
 
-        try:
-            product = Product.objects.get(id=product_id)
-        except Product.DoesNotExist:
-            return Response({"detail": "Product not found."}, status=status.HTTP_404_NOT_FOUND)
-
-        cart = Cart.objects.get(user=self.request.user)
+        cart, created = Cart.objects.get_or_create(user=self.request.user)
         item = Item.objects.filter(cart=cart, product=product).first()
 
         if item:
+            cart.items.remove(item)
             item.delete()
             return Response({"detail": "Item removed from cart."}, status=status.HTTP_200_OK)
-        else:
-            return Response({"detail": "Item not found in cart."}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({"detail": "Item not found in cart."}, status=status.HTTP_404_NOT_FOUND)
 
 
 class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
@@ -239,20 +236,21 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
             except Voucher.DoesNotExist:
                 return Response({"detail": "Invalid voucher code."}, status=status.HTTP_400_BAD_REQUEST)
 
+        cart = Cart.objects.filter(user=user).first()
+
         order = Order.objects.create(
             user=user,
             payment_method=payment_method,
             shipping_address=shipping_address,
-            voucher=voucher
+            voucher=voucher,
+            cart=cart
         )
 
-        cart_items = self.get_items()
-        for item in cart_items:
+        # Chuyển item trong cart sang order
+        for item in cart.items.all():
             item.order = order
-            item.cart = None
             item.save()
-
-        Cart.objects.filter(user=user).update(items=None)
+        cart.items.clear()
 
         return Response(serializers.OrderSerializer(order).data, status=status.HTTP_201_CREATED)
 

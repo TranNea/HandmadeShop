@@ -24,6 +24,7 @@ import cookie from 'react-cookies';
 import Register from './components/Register';
 import Profile from './components/Profile';
 import Wishlist from './components/Wishlist';
+import Cart from './components/Cart';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -55,6 +56,7 @@ function App() {
             <Route path='/register' element={<Register />} />
             <Route path='/profile' element={<Profile />} />
             <Route path='/wishlists' element={<Wishlist />} />
+            <Route path='/carts' element={<Cart />} />
           </Routes>
         </Container>
         <Footer />
