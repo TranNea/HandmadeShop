@@ -16,6 +16,7 @@ const SpecialCase = () => {
                     <p className="text-xs font-semibold font-titleFont">Profile</p>
                 </div>
             </Link>
+            
             <Link to="/carts">
                 <div style={{ boxShadow: '0 0 25px #AAA' }} className="bg-white w-16 h-[70px] rounded-md flex flex-col gap-1 text-[#33475b] justify-center items-center overflow-x-hidden group cursor-pointer relative">
                     <div className="flex justify-center items-center">

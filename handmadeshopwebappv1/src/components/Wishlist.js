@@ -3,7 +3,7 @@ import { Table, Button } from "react-bootstrap";
 import { authAPI, endpoints } from "../configs/API";
 import Loading from "../layouts/Loading";
 import { UserContext } from "../configs/MyContext";
-import { Link } from "react-router-dom"
+import { Link, Navigate } from "react-router-dom"
 
 const Wishlist = () => {
     const [wishlist, setWishlist] = useState(null);
@@ -35,6 +35,10 @@ const Wishlist = () => {
 
     if (loading) {
         return <Loading />;
+    }
+
+    if (user === null) {
+        return <Navigate to="/login" />;
     }
 
     if (!wishlist || wishlist.length === 0) {

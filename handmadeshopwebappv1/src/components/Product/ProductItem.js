@@ -1,30 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Image } from 'react-bootstrap';
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaShoppingCart } from 'react-icons/fa';
 import { MdOutlineLabelImportant } from 'react-icons/md';
 import { BsSuitHeartFill } from 'react-icons/bs';
 import { authAPI, endpoints } from '../../configs/API';
+import { UserContext } from "../../configs/MyContext";
 
 const ProductItem = ({ product }) => {
     const url = `/products/${product.id}`;
 
     const [isHovered, setIsHovered] = useState(false);
     const [hoveredAction, setHoveredAction] = useState(null);
+    const discountedPrice = product.discount ? product.price - product.discount : null;
 
-    const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
+    const [user] = useContext(UserContext);
+    const navigate = useNavigate();
 
     const addToWishlist = async () => {
-        setIsAddingToWishlist(true);
+        if (user === null) {
+            navigate("/login");
+            return;
+        }
+
         try {
             await authAPI().post(endpoints['add-wishlists'](product.id));
-
             alert("Added Product to Wishlist!");
         } catch (error) {
             console.error("Failed to add to wishlist:", error);
             alert("Failed to add to Wishlist.");
-        } finally {
-            setIsAddingToWishlist(false);
+        }
+    };
+
+    const addToCart = async () => {
+        if (user === null) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            await authAPI().post(endpoints['add-carts'], {
+                product_id: product.id,
+            });
+            alert("Added Product to Cart!");
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            alert("Failed to add to cart.");
         }
     };
 
@@ -115,8 +136,6 @@ const ProductItem = ({ product }) => {
         },
     };
 
-    const discountedPrice = product.discount ? product.price - product.discount : null;
-
     return (
         <div style={styles.productItem}
             onMouseEnter={() => setIsHovered(true)}
@@ -134,6 +153,7 @@ const ProductItem = ({ product }) => {
                             }}
                             onMouseEnter={() => product.status !== 'O' && setHoveredAction('addToCart')}
                             onMouseLeave={() => product.status !== 'O' && setHoveredAction(null)}
+                            onClick={addToCart}
                         >
                             Add to Cart <FaShoppingCart />
                         </li>
@@ -152,7 +172,6 @@ const ProductItem = ({ product }) => {
                             style={{
                                 ...styles.actionItem,
                                 ...(hoveredAction === 'addToWishlist' ? styles.actionItemHover : {}),
-                                pointerEvents: isAddingToWishlist ? 'none' : 'auto'
                             }}
                             onMouseEnter={() => setHoveredAction('addToWishlist')}
                             onMouseLeave={() => setHoveredAction(null)}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import API, { authAPI, endpoints } from "../../configs/API";
 import Loading from "../../layouts/Loading";
 import { Button, Col, Form, Image, Row } from "react-bootstrap";
@@ -18,7 +18,8 @@ const ProductDetails = () => {
     const [mainImage, setMainImage] = useState(null);
     const [isWishlisted, setIsWishlisted] = useState(false);
 
-    const [user,] = useContext(UserContext);
+    const [user] = useContext(UserContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadProduct = async () => {
@@ -46,7 +47,6 @@ const ProductDetails = () => {
         loadComments();
     }, []);
 
-
     const addComment = (evt) => {
         evt.preventDefault()
 
@@ -67,16 +67,44 @@ const ProductDetails = () => {
         process()
     }
 
-
     if (product === null) {
         return <Loading />;
     }
 
-    const discountedPrice = product.discount ? product.price - product.discount : null;
+    const addToWishlist = async () => {
+        if (user === null) {
+            navigate("/login");
+            return;
+        }
 
-    const addToWishlist = () => {
-        setIsWishlisted(!isWishlisted);
+        try {
+            await authAPI().post(endpoints['add-wishlists'](product.id));
+            setIsWishlisted(true);
+            alert("Added Product to Wishlist!");
+        } catch (error) {
+            console.error("Failed to add to wishlist:", error);
+            alert("Failed to add to Wishlist.");
+        }
     };
+
+    const addToCart = async () => {
+        if (user === null) {
+            navigate("/login");
+            return;
+        }
+
+        try {
+            await authAPI().post(endpoints['add-carts'], {
+                product_id: product.id,
+            });
+            alert("Added Product to Cart!");
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            alert("Failed to add to cart.");
+        }
+    };
+
+    const discountedPrice = product.discount ? product.price - product.discount : null;
 
     return (
         <div className="outer-container">
@@ -159,7 +187,7 @@ const ProductDetails = () => {
                         )}
 
                         {product.status === 'S' && (
-                            <Button className="add-to-cart-button">Add to Cart</Button>
+                            <Button className="add-to-cart-button" onClick={addToCart}>Add to Cart</Button>
                         )}
                     </div>
                 </div>

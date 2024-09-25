@@ -170,12 +170,9 @@ class CartViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
     serializer_class = serializers.CartSerializer
     permission_classes = [perms.CartOwner]
 
-    def retrieve(self, request, *args, **kwargs):
-        # cart, created = Cart.objects.get_or_create(user=request.user)
-        cart = Cart.objects.get(user=request.user)
-        items = Item.objects.filter(cart=cart)
-
-        return Response(serializers.ItemSerializer(items, many=True).data, status=status.HTTP_200_OK)
+    def get_queryset(self):
+        user = self.request.user
+        return Cart.objects.filter(user=user)
 
     @action(methods=['post'], url_path='items', detail=False)
     def add_items(self, request):
@@ -209,6 +206,22 @@ class CartViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIVi
             cart.items.remove(item)
             item.delete()
             return Response({"detail": "Item removed from cart."}, status=status.HTTP_200_OK)
+
+        return Response({"detail": "Item not found in cart."}, status=status.HTTP_404_NOT_FOUND)
+
+    @action(methods=['patch'], url_path='itemquantity', detail=False)
+    def update_item_quantity(self, request):
+        product_id = request.data.get('product_id')
+        quantity = request.data.get('quantity')
+
+        product = Product.objects.filter(id=product_id).first()
+        cart = Cart.objects.get(user=self.request.user)
+        item = Item.objects.filter(cart=cart, product=product).first()
+
+        if item:
+            item.quantity = quantity
+            item.save()
+            return Response({"detail": "Item quantity updated in cart."}, status=status.HTTP_200_OK)
 
         return Response({"detail": "Item not found in cart."}, status=status.HTTP_404_NOT_FOUND)
 

@@ -22,6 +22,7 @@ export let endpoints = {
     'carts': '/carts/',
     'add-carts': '/carts/items/',
     'remove-carts': '/carts/cartitems/',
+    'update-carts': '/carts/itemquantity/',
 }
 
 export const authAPI = () => axios.create({

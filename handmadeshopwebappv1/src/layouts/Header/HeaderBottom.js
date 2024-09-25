@@ -74,6 +74,7 @@ const HeaderBottom = () => {
                             </div>
                         </Link>
 
+
                         <div onClick={toggleUserMenu} className="flex user-icon">
                             <FaUser />
                             <FaCaretDown />
