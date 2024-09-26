@@ -1,10 +1,10 @@
 import cloudinary
+import json
 from ckeditor_uploader.widgets import CKEditorUploadingWidget
 from django.contrib import admin
 from django import forms
 from django.db.models import Count, Sum, F
-from django.db.models.functions import TruncMonth
-from datetime import datetime
+from django.db.models.functions import TruncMonth, TruncDate
 from handmadeshop.models import User, Blog, BlogComment, Product, ProductComment, Order, Category, Cart, Voucher, \
     Wishlist, Item, Refund
 from django.utils.html import mark_safe
@@ -18,41 +18,63 @@ class MyHandmadeShopAdminSite(admin.AdminSite):
         return [path('handmadeshop-stats/', self.stats_view)] + super().get_urls()
 
     def stats_view(self, request):
-        current_year = datetime.now().year
-
-        monthly_sales = Order.objects.filter(
-            created_date__year=current_year
-        ).annotate(
-            month=TruncMonth('created_date')
-        ).values('month').annotate(
-            total_orders=Count('id'),
-            total_revenue=Sum('cart__items__product__price')
-        ).order_by('month')
-
-        best_selling_products = Item.objects.filter(
-            cart__order__status='D',
-            cart__order__created_date__year=current_year
-        ).values('product__name').annotate(
-            total_quantity=Sum('quantity')
-        ).order_by('-total_quantity')[:5]
 
         total_product = Product.objects.count()
-
         total_product_quantity = Product.objects.aggregate(Sum('quantity'))['quantity__sum'] or 0
-
         total_completed_orders = Order.objects.filter(status='D').count()
+        total_revenue = sum(order.total_order_price() for order in Order.objects.filter(status='D'))
+        total_users = User.objects.count()
+        total_blogs = Blog.objects.count()
+        total_categories = Category.objects.count()
+        total_vouchers = Voucher.objects.count()
 
-        total_revenue = Order.objects.filter(status='D').aggregate(
-            total=Sum(F('cart__items__product__price') * F('cart__items__quantity'))
-        )['total'] or 0
+        # Lấy sản phẩm theo danh mục
+        category_data = Product.objects.values('category__name').annotate(total=Sum('quantity'))
+        category_labels = [item['category__name'] for item in category_data]
+        category_totals = [item['total'] for item in category_data]
+
+        # Lấy sản phẩm
+        product_data = Product.objects.values('name').annotate(total=Sum('quantity'))
+        product_labels = [item['name'] for item in product_data]
+        product_totals = [item['total'] for item in product_data]
+
+        # Lấy đơn hàng
+        order_status_data = Order.objects.values('status').annotate(total=Count('id'))
+        order_status_labels = [dict(Order.ORDER_STATUS).get(item['status']) for item in order_status_data]
+        order_status_totals = [item['total'] for item in order_status_data]
+
+        # Lấy doanh thu
+        # Lấy doanh thu theo ngày
+        revenue_data = Order.objects.filter(status='D').annotate(day=TruncDate('created_date')).values('day').annotate(
+            total=Sum('id'))
+        revenue_labels = [item['day'].strftime('%Y-%m-%d') for item in revenue_data]
+
+        # Tính doanh thu cho từng ngày
+        revenue_totals = []
+        for day in revenue_data:
+            total_price = sum(order.total_order_price() for order in Order.objects.filter(
+                status='D',
+                created_date__date=day['day']
+            ))
+            revenue_totals.append(total_price)
 
         return TemplateResponse(request, 'admin/stats.html', {
-            'monthly_sales': monthly_sales,
-            'best_selling_products': best_selling_products,
-            'total_categories': total_product,
+            'total_products': total_product,
             'total_product_quantity': total_product_quantity,
             'total_completed_orders': total_completed_orders,
             'total_revenue': total_revenue,
+            'total_users': total_users,
+            'total_blogs': total_blogs,
+            'total_categories': total_categories,
+            'total_vouchers': total_vouchers,
+            'product_labels': json.dumps(product_labels),
+            'product_totals': json.dumps(product_totals),
+            'category_labels': json.dumps(category_labels),
+            'category_totals': json.dumps(category_totals),
+            'order_status_labels': json.dumps(order_status_labels),
+            'order_status_totals': json.dumps(order_status_totals),
+            'revenue_labels': json.dumps(revenue_labels),
+            'revenue_totals': json.dumps(revenue_totals),
         })
 
 admin_site = MyHandmadeShopAdminSite(name='MyHandmadeShop')

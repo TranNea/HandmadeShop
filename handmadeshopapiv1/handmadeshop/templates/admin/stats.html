@@ -2,58 +2,130 @@
 {% block content %}
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
-<!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Sales Report</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#monthly-sales">Thống kê sản phẩm</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#best-selling-products">Thống kê hoá đơn</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#revenue-report">Thống kê doanh thu</a>
-            </li>
-        </ul>
-    </div>
-</nav>
+<style>
+    .card {
+        height: 130px;
+        margin-bottom: 20px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+
+    .card.categories { background-color: #FFCCCB; }
+    .card.products { background-color: #ADD8E6; }
+    .card.product-quantity { background-color: #90EE90; }
+    .card.vouchers { background-color: #FFFACD; }
+    .card.users { background-color: #DDA0DD; }
+    .card.blogs { background-color: #FFD700; }
+    .card.delivered-orders { background-color: #FFB6C1; }
+    .card.sales { background-color: #D3D3D3; }
+
+    .statistics-container {
+        display: flex;
+        justify-content: center;
+        gap: 100px;
+    }
+
+    .stat-link {
+        margin-bottom: 10px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .stat-link:hover {
+        text-decoration: underline;
+    }
+
+    .chart-section {
+        display: none;
+        margin-top: 20px;
+    }
+
+    .charts {
+        display: flex;
+        justify-content: space-around;
+    }
+
+    canvas {
+        max-width: 500px;
+        max-height: 500px;
+    }
+
+    .titles {
+        display: flex;
+        justify-content: space-around;
+    }
+</style>
 
 <div class="container mt-4">
-    <div class="row">
+    <div class="row justify-content-center">
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center categories">
                 <div class="card-body">
-                    <h5 class="card-title">Tổng số loại sản phẩm</h5>
+                    <h5 class="card-title">Categories</h5>
                     <p class="card-text">{{ total_categories }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center products">
                 <div class="card-body">
-                    <h5 class="card-title">Tổng số lượng tất cả sản phẩm</h5>
+                    <h5 class="card-title">Products</h5>
+                    <p class="card-text">{{ total_products }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center product-quantity">
+                <div class="card-body">
+                    <h5 class="card-title">Product Quantity</h5>
                     <p class="card-text">{{ total_product_quantity }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center vouchers">
                 <div class="card-body">
-                    <h5 class="card-title">Tổng số đơn hàng hoàn thành</h5>
+                    <h5 class="card-title">Vouchers</h5>
+                    <p class="card-text">{{ total_vouchers }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mt-4">
+        <div class="col-md-3">
+            <div class="card text-center users">
+                <div class="card-body">
+                    <h5 class="card-title">Users</h5>
+                    <p class="card-text">{{ total_users }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center blogs">
+                <div class="card-body">
+                    <h5 class="card-title">Blogs</h5>
+                    <p class="card-text">{{ total_blogs }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center delivered-orders">
+                <div class="card-body">
+                    <h5 class="card-title">Delivered Orders</h5>
                     <p class="card-text">{{ total_completed_orders }}</p>
                 </div>
             </div>
         </div>
         <div class="col-md-3">
-            <div class="card text-center">
+            <div class="card text-center sales">
                 <div class="card-body">
-                    <h5 class="card-title">Tổng doanh thu</h5>
+                    <h5 class="card-title">Sales</h5>
                     <p class="card-text">{{ total_revenue }} VND</p>
                 </div>
             </div>
@@ -61,4 +133,125 @@
     </div>
 </div>
 
+<div class="statistics-container mt-4">
+    <a class="stat-link" data-target="#monthly-sales">Thống kê sản phẩm</a>
+    <a class="stat-link" data-target="#best-selling-products">Thống kê hoá đơn</a>
+    <a class="stat-link" data-target="#revenue-report">Thống kê doanh thu</a>
+</div>
+
+<div id="monthly-sales" class="chart-section">
+    <div class="charts">
+        <canvas id="salesChart" width="400" height="200"></canvas>
+        <canvas id="categoryChart" width="400" height="200"></canvas>
+    </div>
+    <div class="titles">
+        <h5 class="text-center mt-2">Thống kê số lượng các loại sản phẩm</h5>
+        <h5 class="text-center mt-2">Thống kê số lượng sản phẩm theo danh mục</h5>
+    </div>
+</div>
+
+<div id="best-selling-products" class="chart-section">
+    <div class="charts">
+        <canvas id="orderStatusChart" width="400" height="200"></canvas>
+    </div>
+    <h5 class="text-center mt-2">Biểu đồ đơn hàng theo trạng thái</h5>
+</div>
+<div id="revenue-report" class="chart-section">
+    <div class="charts">
+        <canvas id="revenueChart" width="400" height="200"></canvas>
+    </div>
+    <h5 class="text-center mt-2">Biểu đồ doanh thu theo ngày</h5>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.querySelectorAll('.stat-link').forEach(link => {
+        link.addEventListener('click', function() {
+            document.querySelectorAll('.chart-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            const target = document.querySelector(this.getAttribute('data-target'));
+            if(target) {
+                target.style.display = 'block';
+                renderCharts();
+            }
+        });
+    });
+
+    function renderCharts() {
+        const productLabels = JSON.parse('{{ product_labels|safe }}');
+        const productTotals = JSON.parse('{{ product_totals|safe }}');
+        const categoryLabels = JSON.parse('{{ category_labels|safe }}');
+        const categoryTotals = JSON.parse('{{ category_totals|safe }}');
+
+        const salesCtx = document.getElementById('salesChart').getContext('2d');
+        const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+
+        new Chart(salesCtx, {
+            type: 'doughnut',
+            data: {
+                labels: productLabels,
+                datasets: [{
+                    data: productTotals,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#FF9F40', '#4BC0C0',
+                        '#9966FF', '#FFCC00', '#FF5722', '#795548', '#607D8B',
+                        '#E91E63', '#2196F3', '#FF9800', '#4CAF50', '#9C27B0',
+                        '#3F51B5', '#009688', '#FFEB3B', '#FFC107', '#8BC34A'
+                    ]
+                }]
+            },
+        });
+
+        new Chart(categoryCtx, {
+            type: 'pie',
+            data: {
+                labels: categoryLabels,
+                datasets: [{
+                    data: categoryTotals,
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56']
+                }]
+            }
+        });
+
+
+        const orderStatusLabels = JSON.parse('{{ order_status_labels|safe }}');
+        const orderStatusTotals = JSON.parse('{{ order_status_totals|safe }}');
+
+        const orderStatusCtx = document.getElementById('orderStatusChart').getContext('2d');
+
+        new Chart(orderStatusCtx, {
+            type: 'bar',
+            data: {
+                labels: orderStatusLabels,
+                datasets: [{
+                    label: 'Số lượng đơn hàng',
+                    data: orderStatusTotals,
+                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#ADD8E6'],
+                }]
+            }
+        });
+
+
+        const revenueLabels = JSON.parse('{{ revenue_labels|safe }}');
+        const revenueTotals = JSON.parse('{{ revenue_totals|safe }}');
+
+        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+
+        new Chart(revenueCtx, {
+            type: 'line',
+            data: {
+                labels: revenueLabels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: revenueTotals,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+        });
+    }
+</script>
 {% endblock %}
