@@ -14,7 +14,7 @@ const Cart = () => {
         const loadCart = async () => {
             try {
                 const res = await authAPI().get(endpoints['carts']);
-                setCart(res.data[0]);
+                setCart({ items: res.data });
                 setLoading(false);
             } catch (error) {
                 console.error(error);

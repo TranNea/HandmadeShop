@@ -127,6 +127,8 @@ class Wishlist(BaseModel):
 
 class Item(BaseModel):
     quantity = models.PositiveIntegerField(default=1)
+    is_ordered = models.BooleanField(default=False)
+
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -143,6 +145,9 @@ class Item(BaseModel):
         if self.product.discount:
             return self.total_price() - self.discount_total_price()
         return self.total_price()
+
+    def can_add_to_cart(self):
+        return not self.is_ordered
 
 
 class Cart(BaseModel):
@@ -182,14 +187,13 @@ class Order(BaseModel):
     voucher = models.ForeignKey(Voucher, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    items = models.ManyToManyField(Item)
 
     def __str__(self):
         return self.user.username
 
     def total_order_price(self):
-        total = 0
-        for item in self.cart.items.all():
-            total += item.final_price()
+        total = sum(item.final_price() for item in self.items.all())
         if self.voucher:
             total -= self.voucher.value
         return total + 35000    #Tiền ship cố định 35000VNĐ cho mọi đơn hàng, địa chỉ
@@ -199,7 +203,6 @@ class Refund(BaseModel):
     reason = models.CharField(max_length=255, null=True, blank=True)
     accepted = models.BooleanField(default=False)
 
-    # 1 đơn hàng có thể yêu cầu hoàn tiền nhiều lần vì 1 đơn hàng có thể có nhiều sản phẩm
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='refund')
 
     def __str__(self):

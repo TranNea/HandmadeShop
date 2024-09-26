@@ -20,6 +20,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+from handmadeshop.admin import admin_site
+
 schema_view = get_schema_view(
     openapi.Info(
         title="HandmadeShop API",
@@ -33,8 +35,8 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
     path('', include('handmadeshop.urls')),
+    path('admin/', admin_site.urls),
     re_path(r'^ckeditor/', include('ckeditor_uploader.urls')),
 
     re_path(r'^swagger(?P<format>\.json|\.yaml)$',

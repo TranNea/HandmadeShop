@@ -19,7 +19,7 @@ export let endpoints = {
     'wishlists': '/wishlists/',
     'add-wishlists': (productId) => `/products/${productId}/wishlists/`,
     'remove-wishlists': (productId) => `/products/${productId}/remove-wishlist/`,
-    'carts': '/carts/',
+    'carts': '/carts/carts/',
     'add-carts': '/carts/items/',
     'remove-carts': '/carts/cartitems/',
     'update-carts': '/carts/itemquantity/',

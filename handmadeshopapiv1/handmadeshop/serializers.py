@@ -146,4 +146,4 @@ class RefundSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Refund
-        fields = ['id', 'reason', 'accepted', 'order', 'created_date']
+        fields = ['id', 'reason', 'order', 'created_date']
