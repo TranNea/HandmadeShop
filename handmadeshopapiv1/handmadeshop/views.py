@@ -148,12 +148,6 @@ class CategoryViewSet(viewsets.ViewSet, generics.ListAPIView):
     queryset = Category.objects.all()
     serializer_class = serializers.CategorySerializer
 
-    @action(methods=['get'], url_path='products', detail=True)
-    def get_products(self, request, pk):
-        category_id = Category.objects.get(pk=pk)
-        products = Product.objects.filter(category=category_id)
-        return Response(serializers.ProductSerializer(products, many=True).data, status=status.HTTP_200_OK)
-
 
 class WishlistViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIView):
     queryset = Wishlist.objects.all()

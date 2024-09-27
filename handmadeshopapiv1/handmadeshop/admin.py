@@ -43,20 +43,32 @@ class MyHandmadeShopAdminSite(admin.AdminSite):
         order_status_labels = [dict(Order.ORDER_STATUS).get(item['status']) for item in order_status_data]
         order_status_totals = [item['total'] for item in order_status_data]
 
-        # Lấy doanh thu
-        # Lấy doanh thu theo ngày
-        revenue_data = Order.objects.filter(status='D').annotate(day=TruncDate('created_date')).values('day').annotate(
-            total=Sum('id'))
-        revenue_labels = [item['day'].strftime('%Y-%m-%d') for item in revenue_data]
+        # Lấy doanh thu theo tháng
+        month_revenue_data = Order.objects.filter(status='D').annotate(month=TruncMonth('created_date')).values('month').annotate(
+            total=Count('id'))
+        month_revenue_labels = [item['month'].strftime('%Y-%m') for item in month_revenue_data]
+        # Tính tổng doanh thu cho từng tháng
+        month_revenue_totals = []
+        for month in month_revenue_data:
+            total_price = sum(order.total_order_price() for order in Order.objects.filter(
+                status='D',
+                created_date__month=month['month'].month,
+                created_date__year=month['month'].year
+            ))
+            month_revenue_totals.append(total_price)
 
+        # Lấy doanh thu theo ngày
+        date_revenue_data = Order.objects.filter(status='D').annotate(day=TruncDate('created_date')).values('day').annotate(
+            total=Sum('id'))
+        date_revenue_labels = [item['day'].strftime('%Y-%m-%d') for item in date_revenue_data]
         # Tính doanh thu cho từng ngày
-        revenue_totals = []
-        for day in revenue_data:
+        date_revenue_totals = []
+        for day in date_revenue_data:
             total_price = sum(order.total_order_price() for order in Order.objects.filter(
                 status='D',
                 created_date__date=day['day']
             ))
-            revenue_totals.append(total_price)
+            date_revenue_totals.append(total_price)
 
         return TemplateResponse(request, 'admin/stats.html', {
             'total_products': total_product,
@@ -73,8 +85,10 @@ class MyHandmadeShopAdminSite(admin.AdminSite):
             'category_totals': json.dumps(category_totals),
             'order_status_labels': json.dumps(order_status_labels),
             'order_status_totals': json.dumps(order_status_totals),
-            'revenue_labels': json.dumps(revenue_labels),
-            'revenue_totals': json.dumps(revenue_totals),
+            'month_revenue_labels': json.dumps(month_revenue_labels),
+            'month_revenue_totals': json.dumps(month_revenue_totals),
+            'date_revenue_labels': json.dumps(date_revenue_labels),
+            'date_revenue_totals': json.dumps(date_revenue_totals),
         })
 
 admin_site = MyHandmadeShopAdminSite(name='MyHandmadeShop')

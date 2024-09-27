@@ -158,9 +158,13 @@
 </div>
 <div id="revenue-report" class="chart-section">
     <div class="charts">
-        <canvas id="revenueChart" width="400" height="200"></canvas>
+        <canvas id="dateRevenueChart" width="400" height="200"></canvas>
+        <canvas id="monthRevenueChart" width="400" height="200"></canvas>
     </div>
-    <h5 class="text-center mt-2">Biểu đồ doanh thu theo ngày</h5>
+    <div class="titles">
+        <h5 class="text-center mt-2">Biểu đồ doanh thu theo ngày</h5>
+        <h5 class="text-center mt-2">Biểu đồ doanh thu theo tháng</h5>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -233,18 +237,38 @@
         });
 
 
-        const revenueLabels = JSON.parse('{{ revenue_labels|safe }}');
-        const revenueTotals = JSON.parse('{{ revenue_totals|safe }}');
+        const dateRevenueLabels = JSON.parse('{{ date_revenue_labels|safe }}');
+        const dateRevenueTotals = JSON.parse('{{ date_revenue_totals|safe }}');
 
-        const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+        const dateRevenueCtx = document.getElementById('dateRevenueChart').getContext('2d');
 
-        new Chart(revenueCtx, {
+        new Chart(dateRevenueCtx, {
             type: 'line',
             data: {
-                labels: revenueLabels,
+                labels: dateRevenueLabels,
                 datasets: [{
-                    label: 'Doanh thu',
-                    data: revenueTotals,
+                    label: 'Doanh thu ngày',
+                    data: dateRevenueTotals,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 2,
+                    fill: true
+                }]
+            },
+        });
+
+        const monthRevenueLabels = JSON.parse('{{ month_revenue_labels|safe }}');
+        const monthRevenueTotals = JSON.parse('{{ month_revenue_totals|safe }}');
+
+        const monthRevenueCtx = document.getElementById('monthRevenueChart').getContext('2d');
+
+        new Chart(monthRevenueCtx, {
+            type: 'line',
+            data: {
+                labels: monthRevenueLabels,
+                datasets: [{
+                    label: 'Doanh thu tháng',
+                    data: monthRevenueTotals,
                     backgroundColor: 'rgba(54, 162, 235, 0.2)',
                     borderColor: 'rgba(54, 162, 235, 1)',
                     borderWidth: 2,
