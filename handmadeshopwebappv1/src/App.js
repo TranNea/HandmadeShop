@@ -25,6 +25,7 @@ import Register from './components/Register';
 import Profile from './components/Profile';
 import Wishlist from './components/Wishlist';
 import Cart from './components/Cart';
+import CheckOut from './components/CheckOut';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -57,6 +58,7 @@ function App() {
             <Route path='/profile' element={<Profile />} />
             <Route path='/wishlists' element={<Wishlist />} />
             <Route path='/carts' element={<Cart />} />
+            <Route path='/checkout' element={<CheckOut />} />
           </Routes>
         </Container>
         <Footer />

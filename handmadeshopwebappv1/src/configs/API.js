@@ -23,6 +23,11 @@ export let endpoints = {
     'add-carts': '/carts/items/',
     'remove-carts': '/carts/cartitems/',
     'update-carts': '/carts/itemquantity/',
+    'orders': '/orders/userorders/',
+    'add-orders': '/orders/orders/',
+    'cancel-orders': (orderId) => `/orders/${orderId}/cancelorders/`,
+    'vouchers': '/vouchers/',
+    'refunds': '/refunds/refunds/',
 }
 
 export const authAPI = () => axios.create({

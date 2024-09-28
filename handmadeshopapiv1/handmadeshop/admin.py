@@ -150,6 +150,10 @@ class RefundAdmin(admin.ModelAdmin):
 
         super().save_model(request, obj, form, change)
 
+
+class VoucherAdmin(admin.ModelAdmin):
+    list_display = ["code", "value", "description"]
+
 # Register your models here.
 admin_site.register(User, UserAdmin)
 admin_site.register(Blog, BlogAdmin)
@@ -159,7 +163,7 @@ admin_site.register(ProductComment, ProductCommentAdmin)
 admin_site.register(Order, OrderAdmin)
 admin_site.register(Category)
 admin_site.register(Cart, CartAdmin)
-admin_site.register(Voucher)
+admin_site.register(Voucher, VoucherAdmin)
 admin_site.register(Wishlist)
 admin_site.register(Item)
 admin_site.register(Refund, RefundAdmin)

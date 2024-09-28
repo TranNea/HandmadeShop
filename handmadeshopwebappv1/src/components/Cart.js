@@ -3,12 +3,13 @@ import { Table, Button } from "react-bootstrap";
 import { authAPI, endpoints } from "../configs/API";
 import Loading from "../layouts/Loading";
 import { UserContext } from "../configs/MyContext";
-import { Link, Navigate } from "react-router-dom";
+import { Link, Navigate, useNavigate } from "react-router-dom";
 
 const Cart = () => {
     const [cart, setCart] = useState(null);
     const [loading, setLoading] = useState(true);
     const [user] = useContext(UserContext);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const loadCart = async () => {
@@ -146,7 +147,8 @@ const Cart = () => {
 
             <div style={{ display: 'flex', marginTop: '20px', alignItems: 'center', justifyContent: 'flex-end' }}>
                 <h3 className="text-base font-titleFont font-semibold px-2" style={{ marginRight: '30px' }}>Total Price: {getTotalPrice.toLocaleString("en")} VNĐ</h3>
-                <Button className="w-44 bg-black text-gray-200 h-10 font-titleFont text-base tracking-wide font-semibold hover:text-white duration-200">
+                <Button className="w-44 bg-black text-gray-200 h-10 font-titleFont text-base tracking-wide font-semibold hover:text-white duration-200"
+                    onClick={() => navigate("/checkout")}>
                     Order
                 </Button>
             </div>
