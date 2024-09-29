@@ -130,12 +130,13 @@ class VoucherSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.ModelSerializer):
     user = UserSerializer(read_only=True)
     voucher = VoucherSerializer(read_only=True)
+    items = ItemSerializer(many=True, read_only=True)
 
     total_order_price = serializers.SerializerMethodField()
 
     class Meta:
         model = Order
-        fields = ['id', 'payment_method', 'status', 'shipping_address', 'voucher', 'user', 'total_order_price']
+        fields = ['id', 'payment_method', 'status', 'shipping_address', 'voucher', 'user', 'total_order_price', 'items']
 
     def get_total_order_price(self, obj):
         return obj.total_order_price()

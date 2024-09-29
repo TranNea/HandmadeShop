@@ -231,9 +231,13 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
     serializer_class = serializers.OrderSerializer
     permission_classes = [perms.CartOwner]
 
-    def get_items(self):
-        cart = Cart.objects.filter(user=self.request.user).first()
-        return cart.items.all() if cart else []
+    def get_queryset(self):
+        queryset = self.queryset
+        status = self.request.query_params.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+
+        return queryset
 
     @action(methods=['post'], url_path='orders', detail=False)
     def create_order(self, request):
@@ -290,13 +294,29 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
     @action(methods=['get'], url_path='userorders', detail=False)
     def all_user_orders(self, request):
         user = request.user
-        orders = Order.objects.filter(user=user)
+        orders = Order.objects.filter(user=user).order_by('-id')
 
         if not orders.exists():
             return Response({"detail": "Orders not found."},
                             status=status.HTTP_404_NOT_FOUND)
 
         return Response(serializers.OrderSerializer(orders, many=True).data, status=status.HTTP_200_OK)
+
+    @action(methods=['patch'], url_path='receiveorders', detail=True)
+    def receive_order(self, request, pk=None):
+        try:
+            order = Order.objects.get(pk=pk, user=request.user)
+        except Order.DoesNotExist:
+            return Response({"detail": "Order not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        if order.status in ['P', 'R', 'C']:
+            return Response({"detail": "Cannot receive order."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        order.status = 'D'
+        order.save()
+
+        return Response(serializers.OrderSerializer(order).data, status=status.HTTP_200_OK)
 
 
 class VoucherViewSet(viewsets.ViewSet, generics.ListAPIView):

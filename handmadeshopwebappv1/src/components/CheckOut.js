@@ -111,7 +111,7 @@ const CheckOut = () => {
         try {
             await authAPI().post(endpoints['add-orders'], data);
             alert("Order created successfully!");
-            // navigate("/orders");
+            navigate("/orders");
         } catch (error) {
             console.error("Failed to create order:", error);
             alert("Failed to create order.");

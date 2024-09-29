@@ -26,6 +26,8 @@ import Profile from './components/Profile';
 import Wishlist from './components/Wishlist';
 import Cart from './components/Cart';
 import CheckOut from './components/CheckOut';
+import Order from './components/Order/Order';
+import OrderDetail from './components/Order/OrderDetails';
 
 
 ReactDOM.render(<App />, document.getElementById("root"));
@@ -59,6 +61,8 @@ function App() {
             <Route path='/wishlists' element={<Wishlist />} />
             <Route path='/carts' element={<Cart />} />
             <Route path='/checkout' element={<CheckOut />} />
+            <Route path='/orders' element={<Order />} />
+            <Route path='/orders/:orderId' element={<OrderDetail />} />
           </Routes>
         </Container>
         <Footer />

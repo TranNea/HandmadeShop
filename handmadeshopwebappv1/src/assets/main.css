@@ -596,6 +596,9 @@ video {
 .mt-2 {
   margin-top: 0.5rem;
 }
+.mt-3 {
+  margin-top: 0.75rem;
+}
 .mt-\[2px\] {
   margin-top: 2px;
 }
@@ -792,6 +795,9 @@ video {
 }
 .p-0 {
   padding: 0px;
+}
+.p-2 {
+  padding: 0.5rem;
 }
 .p-4 {
   padding: 1rem;

@@ -24,8 +24,10 @@ export let endpoints = {
     'remove-carts': '/carts/cartitems/',
     'update-carts': '/carts/itemquantity/',
     'orders': '/orders/userorders/',
+    'order-details': (orderId) => `/orders/${orderId}/`,
     'add-orders': '/orders/orders/',
     'cancel-orders': (orderId) => `/orders/${orderId}/cancelorders/`,
+    'receive-orders': (orderId) => `/orders/${orderId}/receiveorders/`,
     'vouchers': '/vouchers/',
     'refunds': '/refunds/refunds/',
 }
