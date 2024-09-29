@@ -4,6 +4,8 @@ import { authAPI, endpoints } from "../configs/API";
 import Loading from "../layouts/Loading";
 import { UserContext } from "../configs/MyContext";
 import { useNavigate } from "react-router-dom";
+import { VietQR } from 'vietqr';
+import axios from 'axios';
 
 const CheckOut = () => {
     const [user, setUser] = useContext(UserContext);
@@ -24,6 +26,8 @@ const CheckOut = () => {
         payment_method: "C",
     });
     const [totalPrice, setTotalPrice] = useState(0);
+
+    const [qrCodeData, setQRCodeData] = useState(null);
 
     useEffect(() => {
         const loadData = async () => {
@@ -67,6 +71,7 @@ const CheckOut = () => {
             }, 0) || 0;
             setTotalPrice(total);
         }
+        handleGenerateQRCode();
     }, [selectedVoucher, cart]);
 
     const handleChange = (e) => {
@@ -123,6 +128,39 @@ const CheckOut = () => {
             return formData.custom_address;
         } else {
             return formData.selected_address;
+        }
+    };
+
+    const handleGenerateQRCode = async () => {
+        try {
+            const url = 'https://api.vietqr.io/v2/generate';
+
+            const headers = {
+                'x-client-id': 'edd48f32-5cb1-4da6-9513-2b56aa2d2f49',
+                'x-api-key': 'c1d9d4fa-133f-4d12-a5c4-cead4f2fc220',
+                'Content-Type': 'application/json',
+            };
+
+            const requestBody = {
+                accountNo: '2151050296',
+                accountName: 'TRAN LE HOAI NHAN',
+                acqId: '970422',
+                addInfo: 'Thanh toan hoa don',
+                amount: (totalPrice + 35000),
+                template: 'print'
+            };
+
+            const response = await axios.post(url, requestBody, { headers });
+
+            console.log('QR Code Data:', response.data);
+            setQRCodeData(response.data);
+
+            if (response.data.code === '00') {
+            } else {
+                console.error('Failed to generate QR code:', response.data.desc);
+            }
+        } catch (error) {
+            console.error('Error:', error);
         }
     };
 
@@ -279,6 +317,11 @@ const CheckOut = () => {
                             <option value="C">COD</option>
                         </Form.Control>
                     </Form.Group>
+
+                    {/* QR Code if applicable */}
+                    {formData.payment_method === "Q" || formData.payment_method === "B" ? (
+                        <img src={qrCodeData.data.qrDataURL} style={{ width: '500px', height: '600px' }}/>
+                    ) : null}
 
                     {/* Check Out Button */}
                     <div style={{ display: 'flex', marginTop: '20px', justifyContent: 'center' }}>

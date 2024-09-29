@@ -6,7 +6,7 @@ const styles = {
     yearProduct: {
         width: '95%',
         height: '20rem',
-        margin: '3rem auto',
+        margin: '4rem auto',
         backgroundColor: '#f3f3f3',
         backgroundImage: `url(${productOfTheYear})`,
         backgroundSize: 'cover',
@@ -62,9 +62,7 @@ const YearProduct = () => {
         <Link to="/products">
             <div style={styles.yearProduct}>
                 <div style={styles.content}>
-                    <h1 style={styles.title}>
-                        Product of The Year
-                    </h1>
+                    <h1 style={styles.title}> Product of The Year </h1>
                     <p style={styles.description}>
                         Meet our adorable Orange Cat Keychain, the top-selling item of the year!
                         Made from high-quality materials, this charming accessory keeps your keys organized while adding a fun touch to your everyday life.
