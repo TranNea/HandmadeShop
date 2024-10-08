@@ -183,6 +183,7 @@ class Order(BaseModel):
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD, default='C')
     status = models.CharField(max_length=20, choices=ORDER_STATUS, default='P')
     shipping_address = models.CharField(max_length=255, default='539 Hương Lộ 3, Sơn Kỳ, Tân Phú, TP. Hồ Chí Minh')
+    shipping_phone = models.CharField(max_length=255, null=True, blank=True)
 
     voucher = models.ForeignKey(Voucher, on_delete=models.CASCADE, null=True, blank=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

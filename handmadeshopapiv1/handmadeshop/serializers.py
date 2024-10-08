@@ -136,7 +136,8 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ['id', 'payment_method', 'status', 'shipping_address', 'voucher', 'user', 'total_order_price', 'items']
+        fields = ['id', 'payment_method', 'status', 'shipping_address', 'voucher', 'user', 'total_order_price',
+                  'items', 'shipping_phone']
 
     def get_total_order_price(self, obj):
         return obj.total_order_price()

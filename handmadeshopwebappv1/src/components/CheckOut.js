@@ -110,6 +110,7 @@ const CheckOut = () => {
         const data = {
             payment_method: formData.payment_method,
             shipping_address: getShippingAddress(),
+            shipping_phone: formData.phone,
             voucher_code: selectedVoucher ? selectedVoucher.code : null,
         };
 

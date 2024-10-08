@@ -33,12 +33,12 @@ const Wishlist = () => {
         }
     };
 
-    if (loading) {
-        return <Loading />;
-    }
-
     if (user === null) {
         return <Navigate to="/login" />;
+    }
+
+    if (loading) {
+        return <Loading />;
     }
 
     if (!wishlist || wishlist.length === 0) {

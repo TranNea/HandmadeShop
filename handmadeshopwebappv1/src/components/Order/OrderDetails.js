@@ -126,7 +126,7 @@ const OrderDetails = () => {
                         <p style={{ margin: '10px 15px' }}><strong>Order ID:</strong> {order.id}</p>
                         <p style={{ margin: '10px 15px' }}><strong>Name:</strong> {user.username}</p>
                         <p style={{ margin: '10px 15px' }}><strong>Address:</strong> {order.shipping_address}</p>
-                        <p style={{ margin: '10px 15px' }}><strong>Phone:</strong> {user.phone}</p>
+                        <p style={{ margin: '10px 15px' }}><strong>Phone:</strong> {order.shipping_phone}</p>
                         <p style={{ margin: '10px 15px' }}><strong>Email:</strong> {user.email}</p>
                         <p style={{ margin: '10px 15px' }}><strong>Status:</strong> {getStatusLabel(order.status)}</p>
                     </div>

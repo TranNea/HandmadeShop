@@ -244,6 +244,7 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
         user = request.user
         payment_method = request.data.get('payment_method', 'C')
         shipping_address = request.data.get('shipping_address', '539 Hương Lộ 3, Sơn Kỳ, Tân Phú, TP. Hồ Chí Minh')
+        shipping_phone = request.data.get('shipping_phone', '')
         voucher_code = request.data.get('voucher_code')
 
         voucher = None
@@ -259,16 +260,19 @@ class OrderViewSet(viewsets.ViewSet, generics.ListAPIView, generics.RetrieveAPIV
             user=user,
             payment_method=payment_method,
             shipping_address=shipping_address,
+            shipping_phone=shipping_phone,
             voucher=voucher,
             cart=cart
         )
 
+        # Lấy các items chưa được đặt hàng
         for item in cart.items.all():
             if not item.is_ordered:
                 item.is_ordered = True
                 item.save()
                 order.items.add(item)
 
+            # Cập nhật số lượng sản phẩm
             product = item.product
             product.quantity -= item.quantity
             product.save()

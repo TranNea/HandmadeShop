@@ -138,6 +138,7 @@ class ProductCommentAdmin(admin.ModelAdmin):
 
 class OrderAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "status", "payment_method", "total_order_price","created_date"]
+    list_filter = ['status', 'payment_method']
 
 class RefundAdmin(admin.ModelAdmin):
     list_display = ["id", "order", "reason", "accepted", "created_date"]
